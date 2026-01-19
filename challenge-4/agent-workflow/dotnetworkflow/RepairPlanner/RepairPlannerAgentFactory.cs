@@ -171,6 +171,9 @@ public static class RepairPlannerAgentFactory
         return new AzureOpenAIClient(new Uri(azureOpenAIEndpoint), new DefaultAzureCredential())
             .GetChatClient(deployment)
             .AsIChatClient()
+            .AsBuilder()
+            .UseOpenTelemetry()
+            .Build()
             .CreateAIAgent(
                 instructions: DefaultInstructions,
                 name: "RepairPlannerAgent",

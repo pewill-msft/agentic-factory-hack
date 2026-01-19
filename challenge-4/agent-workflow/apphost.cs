@@ -33,21 +33,21 @@ var apiEndpoint = dotnetworkflow.GetEndpoint("http")
     ?? throw new InvalidOperationException("Expected 'http' endpoint for 'dotnetworkflow' was not created.");
 var frontend = builder.AddViteApp("frontend", "./frontend")
     .WithReference(dotnetworkflow)
-    .WithReference(app)
-    .WithEnvironment("VITE_API_URL", () =>
-    {
-        var codespaceName = Environment.GetEnvironmentVariable("CODESPACE_NAME");
-        var codespacesPortForwardingDomain = Environment.GetEnvironmentVariable("GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN");
+    .WithReference(app);
 
-        if (!string.IsNullOrWhiteSpace(codespaceName) && !string.IsNullOrWhiteSpace(codespacesPortForwardingDomain))
-        {
-            return $"https://{codespaceName}-{apiEndpoint.Port}.{codespacesPortForwardingDomain}/";
-        }
+var codespaceName = Environment.GetEnvironmentVariable("CODESPACE_NAME");
+var codespacesPortForwardingDomain = Environment.GetEnvironmentVariable("GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN");
 
-        var baseUrl = (apiEndpoint.ToString() ?? throw new InvalidOperationException("dotnetworkflow endpoint URL was null.")).TrimEnd('/');
-        return $"{baseUrl}/";
-    })
-    .WaitFor(app)
+if (!string.IsNullOrWhiteSpace(codespaceName) && !string.IsNullOrWhiteSpace(codespacesPortForwardingDomain))
+{
+    frontend.WithEnvironment("VITE_API_URL", () => $"https://{codespaceName}-{apiEndpoint.Port}.{codespacesPortForwardingDomain}/");
+}
+else
+{
+    frontend.WithEnvironment("VITE_API_URL", ReferenceExpression.Create($"{apiEndpoint}/"));
+}
+
+frontend.WaitFor(app)
     .WaitFor(dotnetworkflow);
 
 app.PublishWithContainerFiles(frontend, "./static");

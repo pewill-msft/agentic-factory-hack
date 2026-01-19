@@ -74,3 +74,63 @@ public class ToolCallInfo
     /// </summary>
     public string? Result { get; set; }
 }
+
+// ============================================================================
+// Server-Sent Events (SSE) Types
+// ============================================================================
+// Prefixed with "Sse" to avoid conflicts with Microsoft.Agents.AI.Workflows types
+
+/// <summary>
+/// Base class for all SSE events sent during workflow execution.
+/// </summary>
+public abstract class SseEvent
+{
+    public string Type { get; init; } = string.Empty;
+    public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.UtcNow;
+}
+
+/// <summary>
+/// Emitted when the workflow starts executing.
+/// </summary>
+public class SseWorkflowStarted : SseEvent
+{
+    public SseWorkflowStarted() => Type = "workflow_started";
+    public List<string> AgentPipeline { get; set; } = new();
+}
+
+/// <summary>
+/// Emitted when an agent begins processing.
+/// </summary>
+public class SseAgentStarted : SseEvent
+{
+    public SseAgentStarted() => Type = "agent_started";
+    public string AgentName { get; set; } = string.Empty;
+    public int AgentIndex { get; set; }
+}
+
+/// <summary>
+/// Emitted when an agent completes processing.
+/// </summary>
+public class SseAgentCompleted : SseEvent
+{
+    public SseAgentCompleted() => Type = "agent_completed";
+    public AgentStepResult Step { get; set; } = new();
+}
+
+/// <summary>
+/// Emitted when the entire workflow completes.
+/// </summary>
+public class SseWorkflowCompleted : SseEvent
+{
+    public SseWorkflowCompleted() => Type = "workflow_completed";
+    public WorkflowResponse Result { get; set; } = new();
+}
+
+/// <summary>
+/// Emitted when an error occurs during workflow execution.
+/// </summary>
+public class SseWorkflowError : SseEvent
+{
+    public SseWorkflowError() => Type = "workflow_error";
+    public string Error { get; set; } = string.Empty;
+}

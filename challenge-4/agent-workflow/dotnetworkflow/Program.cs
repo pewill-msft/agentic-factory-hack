@@ -107,6 +107,109 @@ app.MapPost("/api/analyze_machine", async (
     }
 });
 
+// ============================================================================
+// Streaming Endpoint (Server-Sent Events)
+// ============================================================================
+
+app.MapPost("/api/analyze_machine/stream", async (
+    HttpContext httpContext,
+    AIProjectClient projectClient,
+    IConfiguration config,
+    ILoggerFactory loggerFactory,
+    ILogger<Program> logger) =>
+{
+    // Read request body manually since we're using HttpContext directly
+    var request = await httpContext.Request.ReadFromJsonAsync<AnalyzeRequest>();
+    if (request == null)
+    {
+        httpContext.Response.StatusCode = 400;
+        await httpContext.Response.WriteAsync("Invalid request body");
+        return;
+    }
+
+    logger.LogInformation("Starting SSE stream for machine {MachineId}", request.machine_id);
+
+    // Set up SSE response headers
+    httpContext.Response.ContentType = "text/event-stream";
+    httpContext.Response.Headers.CacheControl = "no-cache";
+    httpContext.Response.Headers.Connection = "keep-alive";
+
+    var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
+    // Helper to send SSE events
+    async Task SendEventAsync<T>(T evt) where T : SseEvent
+    {
+        var json = JsonSerializer.Serialize(evt, jsonOptions);
+        await httpContext.Response.WriteAsync($"data: {json}\n\n");
+        await httpContext.Response.Body.FlushAsync();
+    }
+
+    try
+    {
+        // Collect agents (same as non-streaming endpoint)
+        var agents = new List<AIAgent>();
+        agents.AddRange(AgentServiceProvider.GetAgents(projectClient, logger));
+        
+        var repairPlanner = LocalAgentProvider.GetRepairPlannerAgent(config, loggerFactory, logger);
+        if (repairPlanner != null) agents.Add(repairPlanner);
+        
+        agents.AddRange(await A2AAgentProvider.GetAgentsAsync(config, logger));
+
+        // Send workflow_started event
+        await SendEventAsync(new SseWorkflowStarted
+        {
+            AgentPipeline = agents.Select(a => a.Name).ToList()
+        });
+
+        // Track agent index for progress updates
+        int agentIndex = 0;
+
+        // Set up callback to stream agent completions
+        TextOnlyAgentExecutor.SetEventCallback(async (step) =>
+        {
+            await SendEventAsync(new SseAgentCompleted { Step = step });
+            agentIndex++;
+            
+            // Send agent_started for next agent if there is one
+            if (agentIndex < agents.Count)
+            {
+                await SendEventAsync(new SseAgentStarted
+                {
+                    AgentName = agents[agentIndex].Name,
+                    AgentIndex = agentIndex
+                });
+            }
+        });
+
+        // Send first agent_started event
+        if (agents.Count > 0)
+        {
+            await SendEventAsync(new SseAgentStarted
+            {
+                AgentName = agents[0].Name,
+                AgentIndex = 0
+            });
+        }
+
+        // Execute workflow
+        var telemetryJson = JsonSerializer.Serialize(request);
+        var workflowResult = await ExecuteWorkflowAsync(agents, telemetryJson, logger);
+
+        // Send final workflow_completed event
+        await SendEventAsync(new SseWorkflowCompleted { Result = workflowResult });
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "SSE workflow failed for machine {MachineId}", request.machine_id);
+        await SendEventAsync(new SseWorkflowError { Error = ex.Message });
+    }
+    finally
+    {
+        // Clear the callback to avoid memory leaks
+        TextOnlyAgentExecutor.SetEventCallback(null);
+    }
+});
+
 app.Run();
 
 // ============================================================================
@@ -137,11 +240,13 @@ static async Task<WorkflowResponse> ExecuteWorkflowAsync(
     logger.LogInformation("Workflow built with {Count} agents", executors.Count);
 
     // Execute the workflow
-    var run = await InProcessExecution.Default.RunAsync<string>(workflow, input);
+    var run = await InProcessExecution.Default.StreamAsync<string>(workflow, input);
+
+
 
     // Extract final output from workflow events
     string? finalOutput = null;
-    foreach (var evt in run.OutgoingEvents)
+    await foreach (var evt in run.WatchStreamAsync())
     {
         if (evt is WorkflowOutputEvent outputEvent && outputEvent.Is<string>(out var text))
         {
@@ -176,7 +281,8 @@ static void ConfigureTracing(WebApplicationBuilder builder)
     var tracerBuilder = Sdk.CreateTracerProviderBuilder()
         .SetResourceBuilder(resourceBuilder)
         .AddSource(SourceName, "ChatClient")
-        .AddSource("Microsoft.Agents.AI*")
+        .AddSource("Microsoft.Agents.AI.*") // Agent Framework telemetry
+        .AddSource("Microsoft.Extensions.AI.*") // Extensions AI telemetry
         .AddSource("AnomalyClassificationAgent", "FaultDiagnosisAgent", "RepairPlannerAgent")
         .AddSource("MaintenanceSchedulerAgent", "PartsOrderingAgent")
         .AddAspNetCoreInstrumentation()

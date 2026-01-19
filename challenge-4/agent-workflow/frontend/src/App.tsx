@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useCallback, useRef } from 'react'
 import aspireLogo from '/Aspire.png'
 import './App.css'
 
 import { AlarmForm, type AnalyzeMachinePayload } from './components/AlarmForm'
 import { AgentIllustration, type AgentNode } from './components/AgentIllustration'
-import type { WorkflowResponse } from './types/workflow'
+import type { WorkflowResponse, AgentStepResult } from './types/workflow'
+import { streamAnalyzeMachine } from './api/streamAnalyze'
 
 // Sample workflow response for demo purposes
 const DEMO_WORKFLOW_RESPONSE: WorkflowResponse = {
@@ -103,9 +104,10 @@ const DEMO_WORKFLOW_RESPONSE: WorkflowResponse = {
 
 function App() {
   const apiBaseUrl = import.meta.env.VITE_API_URL as string | undefined
-  const analyzeMachineUrl = apiBaseUrl
-    ? new URL('/api/analyze_machine', apiBaseUrl).toString()
-    : '/api/analyze_machine'
+  // Use streaming endpoint for real-time updates
+  const analyzeStreamUrl = apiBaseUrl
+    ? new URL('/api/analyze_machine/stream', apiBaseUrl).toString()
+    : '/api/analyze_machine/stream'
 
   const agents = useMemo<AgentNode[]>(
     () => [
@@ -140,47 +142,69 @@ function App() {
 
   const [submittedPayload, setSubmittedPayload] = useState<AnalyzeMachinePayload | null>(null)
   const [runState, setRunState] = useState<'idle' | 'running' | 'completed'>('idle')
-  const activeIndex: number | null = null
+  const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const [apiResponse, setApiResponse] = useState<WorkflowResponse | null>(null)
   const [apiError, setApiError] = useState<string | null>(null)
+  
+  // Accumulate steps as they stream in
+  const [streamingSteps, setStreamingSteps] = useState<AgentStepResult[]>([])
+  
+  // AbortController for canceling in-flight requests
+  const abortControllerRef = useRef<AbortController | null>(null)
 
-  const callAnalyzeMachine = async (payload: AnalyzeMachinePayload) => {
+  const callAnalyzeMachine = useCallback(async (payload: AnalyzeMachinePayload) => {
+    // Cancel any in-flight request
+    abortControllerRef.current?.abort()
+    abortControllerRef.current = new AbortController()
+
     setSubmittedPayload(payload)
     setRunState('running')
     setApiResponse(null)
     setApiError(null)
+    setStreamingSteps([])
+    setActiveIndex(0)
 
     try {
-      const response = await fetch(analyzeMachineUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      await streamAnalyzeMachine(
+        analyzeStreamUrl,
+        payload,
+        {
+          onWorkflowStarted: (evt) => {
+            console.log('Workflow started:', evt.agentPipeline)
+          },
+          onAgentStarted: (evt) => {
+            console.log('Agent started:', evt.agentName, 'index:', evt.agentIndex)
+            setActiveIndex(evt.agentIndex)
+          },
+          onAgentCompleted: (evt) => {
+            console.log('Agent completed:', evt.step.agentName)
+            setStreamingSteps((prev) => [...prev, evt.step])
+          },
+          onWorkflowCompleted: (evt) => {
+            console.log('Workflow completed')
+            setApiResponse(evt.result)
+            setRunState('completed')
+            setActiveIndex(null)
+          },
+          onError: (error) => {
+            console.error('Workflow error:', error)
+            setApiError(error)
+            setRunState('idle')
+            setActiveIndex(null)
+          },
         },
-        body: JSON.stringify(payload),
-      })
-
-      const contentType = response.headers.get('content-type') || ''
-      const body = contentType.includes('application/json')
-        ? await response.json()
-        : await response.text()
-
-      if (!response.ok) {
-        const message =
-          typeof body === 'string'
-            ? body
-            : (body as { error?: string; detail?: string }).error ||
-              (body as { error?: string; detail?: string }).detail ||
-              `Request failed with ${response.status}`
-        throw new Error(message)
-      }
-
-      setApiResponse(body as WorkflowResponse)
-      setRunState('completed')
+        abortControllerRef.current.signal
+      )
     } catch (err) {
+      if ((err as Error).name === 'AbortError') {
+        console.log('Request aborted')
+        return
+      }
       setApiError(err instanceof Error ? err.message : 'Request failed')
       setRunState('idle')
+      setActiveIndex(null)
     }
-  }
+  }, [analyzeStreamUrl])
 
   const loadDemoData = () => {
     setSubmittedPayload({
@@ -196,10 +220,13 @@ function App() {
   }
 
   const reset = () => {
+    abortControllerRef.current?.abort()
     setRunState('idle')
     setSubmittedPayload(null)
     setApiResponse(null)
     setApiError(null)
+    setStreamingSteps([])
+    setActiveIndex(null)
   }
 
   return (
@@ -264,6 +291,7 @@ function App() {
               activeIndex={activeIndex} 
               runState={runState} 
               workflowResponse={apiResponse}
+              streamingSteps={streamingSteps}
             />
 
             <div className="submitted-preview">

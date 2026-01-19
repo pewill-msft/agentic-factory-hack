@@ -156,20 +156,25 @@ export function AgentIllustration(props: {
   activeIndex: number | null
   runState: 'idle' | 'running' | 'completed'
   workflowResponse?: WorkflowResponse | null
+  streamingSteps?: AgentStepResult[]
 }) {
-  const { agents, activeIndex, runState, workflowResponse } = props
+  const { agents, activeIndex, runState, workflowResponse, streamingSteps = [] } = props
 
-  // Build a map of agent events from the workflow response
+  // Build a map of agent events from the workflow response OR streaming steps
   const agentEventsMap = new Map<string, AgentStepResult[]>()
-  if (workflowResponse?.agentSteps) {
-    for (const step of workflowResponse.agentSteps) {
-      const normalizedId = normalizeAgentName(step.agentName)
-      const existingSteps = agentEventsMap.get(normalizedId)
-      if (existingSteps) {
-        existingSteps.push(step)
-      } else {
-        agentEventsMap.set(normalizedId, [step])
-      }
+  
+  // Use final response steps if completed, otherwise use streaming steps
+  const stepsToDisplay = runState === 'completed' && workflowResponse?.agentSteps 
+    ? workflowResponse.agentSteps 
+    : streamingSteps
+  
+  for (const step of stepsToDisplay) {
+    const normalizedId = normalizeAgentName(step.agentName)
+    const existingSteps = agentEventsMap.get(normalizedId)
+    if (existingSteps) {
+      existingSteps.push(step)
+    } else {
+      agentEventsMap.set(normalizedId, [step])
     }
   }
 
@@ -250,8 +255,8 @@ export function AgentIllustration(props: {
                 </div>
                 <div className="agent-node__desc">{agent.description}</div>
                 
-                {/* Show agent events when workflow is completed */}
-                {runState === 'completed' && steps && (
+                {/* Show agent events during streaming or when completed */}
+                {(runState === 'completed' || runState === 'running') && steps && (
                   <AgentStepEvents steps={steps} />
                 )}
               </div>
