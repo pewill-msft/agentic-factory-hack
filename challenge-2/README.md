@@ -475,7 +475,7 @@ The diagram above illustrates how **GitHub Copilot** combines multiple inputs to
 
 ❸ **Workspace context** — Copilot examines files in your workspace to understand structure and data, such as `README.md`, `technicians.json`, `work-orders.json`, and your existing code files. This helps it generate code that fits your project.
 
-❹ **Tools and data (MCP)** — Copilot can be equipped with additional tools exposed via the Model Context Protocol (MCP) to accomplish more complex tasks. **This is very similar to how our agents in [challenge 1](../challenge-1/README.md) were equipped with tools** — just as we gave the **Fault Diagnoses Agent** access to **Cosmos DB** queries and a knowledge base, you can extend Copilot with external data sources and capabilities.
+❹ **Tools and data (MCP)** — Copilot can be equipped with additional tools exposed via the Model Context Protocol (MCP) to accomplish more complex tasks. **This is very similar to how our agents in [challenge 1](../challenge-1/README.md) were equipped with tools** — just as we gave the **Fault Diagnosis Agent** access to **Cosmos DB** queries and a knowledge base, you can extend Copilot with external data sources and capabilities.
 
 
 If you want to expand your knowledge on what we’ve covered in this challenge, have a look at the content below:

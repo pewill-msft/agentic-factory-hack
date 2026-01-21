@@ -513,6 +513,11 @@ In [Task 1](#task-1-create-and-test-initial-anomaly-classification-agent) we cre
 
 The agent had a system prompt with instructions how to behave and had two *local* tools to be able to query **Cosmos DB** data. When running the Python script the tools executed locally in the Python process. If you were to ask the same questions in the **Foundry Portal** playground the agent wouldn't be able to answer since the tools are not available there.
 
+> [!NOTE]
+> **When do you need an agent?** This particular example could be solved *without* an agent — it's mainly mapping metrics to thresholds. The only thing we're using AI for here is generating a human-readable summary of the issue. However, using an agent (besides being a learning exercise) means we can add more tools in the future for more advanced reasoning. We also get built-in observability and memory (conversation history), which we'll examine in Challenge 3.
+>
+> You don't always need a full agent. You can use the **Azure AI Inference SDK** to call a model directly without going through an agent when your use case is simpler.
+
 
 
 In [Task 2](#task-2-equip-the-agent-with-mcp-tools), we published the APIs as MCP servers in **API Management** and connected them to the Foundry project.
@@ -534,5 +539,7 @@ If you want to expand your knowledge on what we’ve covered in this challenge, 
 - [What is a knowledge source?](https://learn.microsoft.com/en-us/azure/search/agentic-knowledge-source-overview)
 - [Connect a **Foundry IQ** knowledge base to **Foundry Agent Service**](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/knowledge-retrieval?view=foundry&tabs=foundry%2Cpython)
 - [Azure AI Inference client library for Python](https://learn.microsoft.com/en-us/python/api/overview/azure/ai-inference-readme?view=azure-python-preview)
+
+---
 
 **Next step:** [Challenge 2](../challenge-2/README.md) - Building the **Repair Planner Agent** with **GitHub Copilot**
