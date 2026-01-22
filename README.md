@@ -18,6 +18,16 @@ By participating in this hackathon, you will learn how to:
 - Instrument the solution so you can inspect agent outputs, tool calls, logs, and traces during development
 - Build an end-to-end agent workflow using Microsoft Agent Framework and sequential orchestration hosted in **Aspire** with agent-to-agent (A2A) communication.
 
+## Requirements
+
+To successfully complete this hackathon, you will need the following:
+
+- [**GitHub account**](https://github.com/signup) to access the repository, run [**GitHub Codespaces**](https://github.com/features/codespaces), and use [**GitHub Copilot**](https://github.com/features/copilot)
+- Be familiar with **Python** or **.NET** programming, including handling JSON data and making API calls
+- Be familiar with Generative AI Solutions and Azure Services
+- An active **Azure subscription**, with **Owner** rights
+- Ability to provision Azure resources in `swedencentral` or [another supported region](https://learn.microsoft.com/en-us/azure/ai-foundry/openai/concepts/models?tabs=global-standard%2Cstandard-chat-completions#global-standard-model-availability)
+
 ## Scenario
 
 This hackathon uses a fictitious tire manufacturing company as an example, but the scenario is applicable to most manufacturing environments where machines are involved in production.
@@ -121,16 +131,6 @@ The following challenges are included in this hackathon:
 - **Challenge 2**: **[Repair Planner Agent and AI-Driven Development](challenge-2/README.md)** — Learn agent-driven development with **GitHub Copilot** by using the `agentplanning` agent to guide you through building a **Repair Planner Agent** in .NET.
 - **Challenge 3**: **[Maintenance Scheduler & Parts Ordering Agents with Memory and Observability](challenge-3/README.md)** — Build **Maintenance Scheduler** and **Parts Ordering** agents using **Microsoft Foundry's** persistent memory layer to maintain context across sessions, and explore agent traceability for observability.
 - **Challenge 4**: **[Multi-Agent Orchestration](challenge-4/README.md)** — Create the workflow of these 5 agents using **Microsoft Agent Framework** and run it in **Aspire**.
-
-## Requirements
-
-To successfully complete this hackathon, you will need the following:
-
-- GitHub account to access the repository, run **GitHub Codespaces**, and use **GitHub Copilot**
-- Be familiar with Python or .NET programming, including handling JSON data and making API calls
-- Be familiar with Generative AI Solutions and Azure Services
-- An active Azure subscription, with Owner rights
-- Ability to provision resources in `swedencentral` or [another supported region](https://learn.microsoft.com/en-us/azure/ai-foundry/openai/concepts/models?tabs=global-standard%2Cstandard-chat-completions#global-standard-model-availability)
 
 ## Contributing
 
