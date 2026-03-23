@@ -42,7 +42,7 @@ A **declarative workflow** lets you connect multiple agents in sequence. The out
 ### Task 1: Create a Prompt Agent
 
 1. In the Foundry Portal, navigate to **Agents** in the left navigation.
-2. On the **Agents** tab, click **+ New agent**.
+2. On the **Agents** tab, click **Create agent**.
 3. In the "Create an agent" dialog, enter the **Agent name**: `TireAssistant` and click **Create**.
 4. You'll land on the agent's **Playground** page. Configure it:
    - **Model**: Select `gpt-4o-mini` from the dropdown (pre-deployed from Challenge 0).
@@ -58,7 +58,7 @@ A **declarative workflow** lets you connect multiple agents in sequence. The out
      provided enough detail. Structure your responses with clear steps.
      ```
 
-5. Click **Save** in the top-right. Notice the version indicator shows **v1** with a timestamp.
+5. Click **Save** in the top-right. Notice the version indicator shows **v2** with a timestamp.
 
 > [!TIP]
 > The agent page has four tabs: **Playground**, **Traces**, **Monitor**, and **Evaluation**. You also have **Chat**, **YAML**, and **Code** tabs on the right side of the playground. For now, stay on the Playground/Chat view.
@@ -66,10 +66,9 @@ A **declarative workflow** lets you connect multiple agents in sequence. The out
 <details>
 <summary>✅ You should see something similar to this</summary>
 
-The agent detail page showing the name "TireAssistant", the selected model, and the instructions you entered.
+The agent playground showing "TireAssistant" with the model set to gpt-4.1, Instructions filled in, Tools section with Web search, Knowledge and Memory sections, and the Chat panel on the right.
 
-<!-- TODO: Replace with actual screenshot -->
-![Agent Created](./images/placeholder-agent-created.png)
+![Agent Created](./images/agent-created.png)
 
 </details>
 
@@ -104,7 +103,7 @@ The agent detail page showing the name "TireAssistant", the selected model, and 
    recommendation. End each response with a one-line safety reminder.
    ```
 
-2. **Save** the agent. The portal automatically creates a new version each time you save — notice the version indicator in the top bar changes (e.g., **v2 saved Today 10:59 AM**).
+2. **Save** the agent. The portal automatically creates a new version each time you save — notice the version indicator in the top bar changes (e.g., **v3 saved Today 10:59 AM**).
 3. Click the **version dropdown** (next to the version label) to see the version history. You can select any previous version to view or restore it — this lets you roll back if a change doesn't work well.
 4. Ask the **same question** you asked in Task 2:
    > "The tire building drum on machine TB-200 is vibrating excessively. What should I check first?"
@@ -132,7 +131,7 @@ The agent detail page showing the name "TireAssistant", the selected model, and 
 6. Teach the agent a fact:
    > "Remember this: I always work on machine TB-200 in Building A, Line 3. My name is Alex and I'm a Level 2 mechanical technician."
 5. The agent should acknowledge that it will remember this information.
-6. Now **start a completely new conversation** (not just a new message — a fresh session).
+6. Now **start a completely new conversation** (not just a new message — a fresh session by selecting another tab like **Models** and then navigate back to **Agents** and **TireAssistant**).
 7. In the new conversation, ask:
    > "Which machine do I usually work on, and what's my certification level?"
 8. Verify the agent recalls the information from the previous conversation.
@@ -199,17 +198,18 @@ In this task you'll create a simple two-agent workflow where a **Researcher** ag
 **Step 3 — Create the workflow:**
 
 1. Navigate to **Agents** in the left navigation and switch to the **Workflows** tab (marked **Preview**).
-2. Click **Create** and select **Sequential** from the dropdown.
-3. In the "Give your workflow a name" dialog, enter `TireAnalysisWorkflow` and click **Save**.
-4. You'll see a visual workflow builder with a **Start** node. Click the **+** icon (or click **New node**) to add the first agent node:
+2. Click **Create** and select **Blank workflow** from the dropdown.
+3. You'll see a visual workflow builder with a **Start** node. Click the **+** icon (or click **New node**) to add the first agent node:
    - In the node panel, select **Agent** as the node type.
    - In **Select an agent**, choose `ManufacturingResearcher`.
    - For **Input message**, select `System.LastMessage.Text` from the variable dropdown.
-5. Add a second agent node after the first:
+   - Click **Done** to save the changes
+4. Add a second agent node after the first:
    - Select **Agent** as the node type.
    - In **Select an agent**, choose `ExecutiveSummarizer`.
-   - For **Input message**, select the output variable from the previous node (the Researcher's response).
-6. Click **Save**. The visualizer should show: **Start** → **ManufacturingResearcher** → **ExecutiveSummarizer**.
+   - For **Input message**, select `System.LastMessage.Text` (the Researcher's response).
+   - Click **Done** to save the changes
+5. Click **Save** and enter `TireAnalysisWorkflow` as the workflow name. The visualizer should show: **Start** → **ManufacturingResearcher** → **ExecutiveSummarizer**.
 
 **Step 4 — Test the workflow:**
 
