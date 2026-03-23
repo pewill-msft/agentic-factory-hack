@@ -45,7 +45,7 @@ A **declarative workflow** lets you connect multiple agents in sequence. The out
 2. On the **Agents** tab, click **Create agent**.
 3. In the "Create an agent" dialog, enter the **Agent name**: `TireAssistant` and click **Create**.
 4. You'll land on the agent's **Playground** page. Configure it:
-   - **Model**: Select `gpt-4o-mini` from the dropdown (pre-deployed from Challenge 0).
+   - **Model**: Select `gpt-4o-mini` from the dropdown.
    - **Instructions**: Paste the following:
 
      ```
@@ -210,6 +210,10 @@ In this task you'll create a simple two-agent workflow where a **Researcher** ag
    - For **Input message**, select `System.LastMessage.Text` (the Researcher's response).
    - Click **Done** to save the changes
 5. Click **Save** and enter `TireAnalysisWorkflow` as the workflow name. The visualizer should show: **Start** → **ManufacturingResearcher** → **ExecutiveSummarizer**.
+
+You should see something like this:
+
+![Tire Analysis Workflow](./images/tire-analysis-workflow.png)
 
 **Step 4 — Test the workflow:**
 
