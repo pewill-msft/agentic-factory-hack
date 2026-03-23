@@ -41,11 +41,11 @@ A **declarative workflow** lets you connect multiple agents in sequence. The out
 
 ### Task 1: Create a Prompt Agent
 
-1. In the Foundry Portal, navigate to **Build** → **Agents**.
-2. Click **+ New agent**.
-3. Configure the agent:
-   - **Name**: `TireAssistant`
-   - **Model**: Select `gpt-4o-mini` (pre-deployed from Challenge 0)
+1. In the Foundry Portal, navigate to **Agents** in the left navigation.
+2. On the **Agents** tab, click **+ New agent**.
+3. In the "Create an agent" dialog, enter the **Agent name**: `TireAssistant` and click **Create**.
+4. You'll land on the agent's **Playground** page. Configure it:
+   - **Model**: Select `gpt-4o-mini` from the dropdown (pre-deployed from Challenge 0).
    - **Instructions**: Paste the following:
 
      ```
@@ -58,7 +58,10 @@ A **declarative workflow** lets you connect multiple agents in sequence. The out
      provided enough detail. Structure your responses with clear steps.
      ```
 
-4. Click **Create** (or **Save**) to create the agent.
+5. Click **Save** in the top-right. Notice the version indicator shows **v1** with a timestamp.
+
+> [!TIP]
+> The agent page has four tabs: **Playground**, **Traces**, **Monitor**, and **Evaluation**. You also have **Chat**, **YAML**, and **Code** tabs on the right side of the playground. For now, stay on the Playground/Chat view.
 
 <details>
 <summary>✅ You should see something similar to this</summary>
@@ -72,7 +75,7 @@ The agent detail page showing the name "TireAssistant", the selected model, and 
 
 ### Task 2: Multi-Turn Conversation
 
-1. With `TireAssistant` selected, open the **chat** (or **test**) panel.
+1. With `TireAssistant` selected, open the **chat** panel.
 2. Have a multi-turn conversation. Try this sequence:
 
 <details>
@@ -101,8 +104,8 @@ The agent detail page showing the name "TireAssistant", the selected model, and 
    recommendation. End each response with a one-line safety reminder.
    ```
 
-2. **Save** the agent. The portal automatically creates a new version each time you save — you don't need to include a version number in the name.
-3. Note the version number the portal assigned (visible in the version history or agent details).
+2. **Save** the agent. The portal automatically creates a new version each time you save — notice the version indicator in the top bar changes (e.g., **v2 saved Today 10:59 AM**).
+3. Click the **version dropdown** (next to the version label) to see the version history. You can select any previous version to view or restore it — this lets you roll back if a change doesn't work well.
 4. Ask the **same question** you asked in Task 2:
    > "The tire building drum on machine TB-200 is vibrating excessively. What should I check first?"
 5. Compare the new version's response with the previous version's response:
@@ -121,10 +124,12 @@ The agent detail page showing the name "TireAssistant", the selected model, and 
 
 ### Task 4: Enable Memory
 
-1. In the agent configuration, look for the **Tools** section.
-2. Enable the **Memory** tool (it may appear as a toggle or an add-on tool).
-3. Once enabled, open a **new conversation** with the agent.
-4. Teach the agent a fact:
+1. In the agent playground, scroll down in the left panel to the **Memory** section (marked **Preview**).
+2. Expand the Memory section — you'll see: *"Memory retains context to personalize and improve interactions. A memory store will be auto-created for you."*
+3. Click the **Add** button to enable memory for this agent.
+4. Click **Save** to create a new agent version with memory enabled.
+5. Open a **new conversation** with the agent (click the new chat icon or refresh).
+6. Teach the agent a fact:
    > "Remember this: I always work on machine TB-200 in Building A, Line 3. My name is Alex and I'm a Level 2 mechanical technician."
 5. The agent should acknowledge that it will remember this information.
 6. Now **start a completely new conversation** (not just a new message — a fresh session).
@@ -150,7 +155,7 @@ In this task you'll create a simple two-agent workflow where a **Researcher** ag
 
 **Step 1 — Create the Researcher agent:**
 
-1. Navigate to **Build** → **Agents** and create a new agent:
+1. Navigate to **Agents** in the left navigation, stay on the **Agents** tab, and create a new agent:
    - **Name**: `ManufacturingResearcher`
    - **Model**: `gpt-4o-mini`
    - **Instructions**:
@@ -193,16 +198,22 @@ In this task you'll create a simple two-agent workflow where a **Researcher** ag
 
 **Step 3 — Create the workflow:**
 
-1. Navigate to **Build** → **Agents** and look for an option to create a **Workflow** (or **Multi-agent workflow** / **Declarative workflow**).
-2. Add the two agents in sequence:
-   - **Step 1**: `ManufacturingResearcher`
-   - **Step 2**: `ExecutiveSummarizer`
-3. Configure the workflow so the output of the Researcher flows as input to the Summarizer.
-4. Save the workflow.
+1. Navigate to **Agents** in the left navigation and switch to the **Workflows** tab (marked **Preview**).
+2. Click **Create** and select **Sequential** from the dropdown.
+3. In the "Give your workflow a name" dialog, enter `TireAnalysisWorkflow` and click **Save**.
+4. You'll see a visual workflow builder with a **Start** node. Click the **+** icon (or click **New node**) to add the first agent node:
+   - In the node panel, select **Agent** as the node type.
+   - In **Select an agent**, choose `ManufacturingResearcher`.
+   - For **Input message**, select `System.LastMessage.Text` from the variable dropdown.
+5. Add a second agent node after the first:
+   - Select **Agent** as the node type.
+   - In **Select an agent**, choose `ExecutiveSummarizer`.
+   - For **Input message**, select the output variable from the previous node (the Researcher's response).
+6. Click **Save**. The visualizer should show: **Start** → **ManufacturingResearcher** → **ExecutiveSummarizer**.
 
 **Step 4 — Test the workflow:**
 
-1. Open the workflow and start a conversation.
+1. Click the **Preview** button in the top bar to open the preview panel.
 2. Send this prompt:
    > "Investigate why our tire curing press TC-100 is producing inconsistent cure times across batches. Recent data shows cure time variance has increased from ±2 seconds to ±8 seconds over the past month."
 3. Observe the two-stage output:
@@ -245,13 +256,32 @@ Try creating variations of the TireAssistant with different instruction styles a
 
 Create 2–3 variants and test them with the same question. Note which style produces the most useful, actionable responses for a maintenance technician.
 
+### Task 8: Explore Other Workflow Types
+
+The Sequential workflow you built in Task 5 is just one pattern. The portal supports several workflow types (see [Workflow concepts](https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/workflow)):
+
+| Type | Description | When to use |
+|------|-------------|-------------|
+| **Sequential** | Agents run one after another in a chain | Pipeline tasks: research → summarize → format |
+| **Human in Loop** | Workflow pauses for human approval before continuing | Quality gates, sensitive decisions |
+| **Group chat** | Multiple agents discuss and collaborate on a shared thread | Brainstorming, multi-perspective analysis |
+| **Blank workflow** | Empty canvas with full control over node types | Custom flows with conditionals, loops, variables |
+
+Try creating a **Group chat** workflow:
+1. Go to **Agents** → **Workflows** tab → **Create** → **Group chat**.
+2. Name it `TireDebateWorkflow`.
+3. Add `TireAssistant` and `ManufacturingResearcher` as participants.
+4. Send a problem statement and observe how both agents contribute different perspectives to the conversation.
+
+Or explore a **Blank workflow** and experiment with the available node types: **Data transformation** (Set/Reset variable, Parse value), **Flow** (If/else, For each, Go to node), and **Basics** (Deliver a message).
+
 ## 🛠️ Troubleshooting and FAQ
 
 <details>
 <summary>Agent creation fails or I can't find the Agents section</summary>
 
 - Ensure you're in the correct project scope in the Foundry Portal.
-- The Agents section is under **Build** → **Agents**. If you don't see it, your project may need the Agent Service enabled — ask your coach.
+- The Agents section is under **Agents** in the left navigation. If you don't see it, your project may need the Agent Service enabled — ask your coach.
 
 </details>
 
@@ -268,7 +298,7 @@ Create 2–3 variants and test them with the same question. Note which style pro
 <details>
 <summary>Workflow builder is not available</summary>
 
-- Declarative workflows may be in preview and not available in all regions.
+- Workflows are under **Agents** → **Workflows** tab (marked **Preview**). If you don't see the Workflows tab, the feature may not be available in your region.
 - As a workaround: run the Researcher agent manually, copy its output, and paste it as input to the Summarizer agent. You'll still experience the two-agent pattern, just with a manual handoff step.
 
 </details>
