@@ -47,14 +47,11 @@ The environment provisioned includes resources you'll interact with across both 
    - An **API Management** service
    - **Application Insights** / **Log Analytics**
 
-<details>
-<summary>✅ You should see something similar to this</summary>
+**✅ You should see something similar to this**
 
 A resource group containing 12 resources. 
 
 ![Azure Resource Group](./images/azure-resources.png)
-
-</details>
 
 ### Task 2: Access the Foundry Portal
 
@@ -68,14 +65,11 @@ A resource group containing 12 resources.
    - **Coding quick start** — Expandable section with getting-started guidance
 4. Verify that your pre-created **project** is visible on the welcome page — you should see its credentials (API key, endpoint) displayed. If no project appears, ask your coach for help.
 
-<details>
-<summary>✅ You should see something similar to this</summary>
+**✅ You should see something similar to this**
 
 The Foundry Portal welcome page showing your name, the Start building button, project credentials, and the top navigation bar with Home, Discover, Build, Operate, and Docs.
 
 ![Foundry Portal Welcome Page](./images/foundry-welcome-page.png)
-
-</details>
 
 > [!TIP]
 > If you see a "request access" or permission error, ask your coach for help. You may need to be added to the project's access control (IAM) in the Azure portal.
@@ -93,33 +87,24 @@ The Foundry Portal welcome page showing your name, the Start building button, pr
 
 3. Click on one of the deployments to view its details: deployment name, model version, rate limits, and endpoint URL.
 
-<details>
-<summary>✅ You should see something similar to this</summary>
+**✅ You should see something similar to this**
 
 The Assets page under Operate showing three model deployments, all with state "Succeeded".
 
 ![Model Deployments](./images/model-deployments.png)
 
-</details>
-
 ## 🛠️ Troubleshooting and FAQ
 
-<details>
-<summary>I can't find the resource group in the Azure portal</summary>
+**I can't find the resource group in the Azure portal**
 
 - Make sure you're signed in with the correct Azure account.
 - Try searching for the resource group name in the top search bar.
 - Check that your subscription filter (top-level filter bar) is not hiding the subscription.
 
-</details>
-
-<details>
-<summary>I get a permission error in the Foundry Portal</summary>
+**I get a permission error in the Foundry Portal**
 
 - You need at least **Cognitive Services User** or **Contributor** role on the AI Foundry resource.
 - Ask your coach to verify your role assignment in the Azure portal under the resource's **Access control (IAM)** blade.
-
-</details>
 
 
 ## 🧠 Conclusion

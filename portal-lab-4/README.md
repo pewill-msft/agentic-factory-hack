@@ -239,8 +239,7 @@ Think of it this way: the **knowledge base** is the "brain" that decides how to 
 >
 > ![Approve knowledge base tool](./images/approve-kb-tool.png)
 
-<details>
-<summary>💬 Sample prompts for Foundry IQ</summary>
+**💬 Sample prompts for Foundry IQ**
 
 **Prompt 1** — Specific diagnostics:
 > "What are the diagnostic steps for excessive curing temperature on a tire curing press?"
@@ -254,15 +253,12 @@ Think of it this way: the **knowledge base** is the "brain" that decides how to 
 **Prompt 4** — Specific fault lookup:
 > "What are the likely causes and corrective actions for the fault type 'ply_tension_excessive'?"
 
-</details>
-
 7. Verify the responses:
    - Are **citations** included, showing which source document was used?
    - Do the answers match the content in the wiki markdown files?
    - Try the cross-document query (Prompt 3) — Foundry IQ should pull from multiple documents and combine the information.
 
-<details>
-<summary>💬 How Foundry IQ works behind the scenes</summary>
+**💬 How Foundry IQ works behind the scenes**
 
 When you ask a question:
 1. **Query decomposition**: The system breaks your question into targeted sub-queries.
@@ -271,8 +267,6 @@ When you ask a question:
 4. **Cited response**: The agent generates an answer that includes inline citations like `[tire_building_machine.md]`.
 
 This is fundamentally different from File Search (Lab 3 Task 1), which works with individual uploaded files. Foundry IQ handles enterprise-scale knowledge bases with multiple documents and provides traceable, cited answers.
-
-</details>
 
 ## 🚀 Go Further
 
@@ -305,16 +299,13 @@ In Task 2 you created a knowledge base through Foundry IQ. Behind the scenes, th
 4. Try a cross-document query:
    > "Which machine has the longest estimated repair time for its most critical fault?"
 
-<details>
-<summary>💬 Why explore the Search service directly?</summary>
+**💬 Why explore the Search service directly?**
 
 Understanding what's behind Foundry IQ helps you:
 - **Debug** issues when the agent doesn't return expected results — is the content indexed? Is the query finding it?
 - **Tune** retrieval by adjusting reasoning effort, retrieval instructions, or output configurations.
 - **Verify** that your knowledge sources are synced and active.
 - **Compare** the raw retrieval results with what the agent returns — this shows you how much the agent adds through its instructions and conversation context.
-
-</details>
 
 > [!TIP]
 > You can also explore **Knowledge sources** (under Agentic retrieval) to see the blob storage connection details, and **Indexes** (under Search management) to see the underlying search index created by Foundry IQ.
@@ -334,56 +325,41 @@ Now that you've used both approaches, compare them side by side with the same qu
    - Are there differences in citation format between File Search and Foundry IQ?
    - Which response feels more comprehensive?
 
-<details>
-<summary>💬 What to observe</summary>
+**💬 What to observe**
 
 - **File Search** works well for the uploaded maintenance manual PDF — it's fast and simple.
 - **Foundry IQ** shines when you need to search across multiple documents, get cited answers, and share the knowledge base across agents.
 - In production, you'd typically use Foundry IQ for your core enterprise knowledge and File Search for ad-hoc document uploads.
 
-</details>
-
 ## 🛠️ Troubleshooting and FAQ
 
-<details>
-<summary>Foundry IQ indexing seems stuck</summary>
+**Foundry IQ indexing seems stuck**
 
 - Indexing 5 small markdown files should complete in 2–5 minutes.
 - If you get an error like *"Unable to retrieve blob container... using your managed identity"*, change the **Authentication type** to **API Key** and try again.
 - If stuck beyond 10 minutes, verify the 5 `.md` files are actually in the `machine-wiki` container (go to Storage browser and check).
 - Try deleting the knowledge base and recreating it with the connection.
 
-</details>
-
-<details>
-<summary>Citations don't appear in agent responses</summary>
+**Citations don't appear in agent responses**
 
 - Not all question types trigger citations. Try asking a very specific factual question: "What is the normal drum vibration threshold for a tire building machine?"
 - Check that the knowledge base shows as "Connected" or "Active" on the agent.
 - Make sure the agent instructions explicitly say to "use the knowledge base tool" and "include citations."
 - Some models follow citation instructions more reliably than others — try switching to gpt-4.1.
 
-</details>
-
-<details>
-<summary>Agent doesn't use the knowledge base</summary>
+**Agent doesn't use the knowledge base**
 
 - Verify the knowledge base is connected under the **Knowledge** section (not Tools).
 - Update the agent instructions to explicitly say: "Use the knowledge base tool to answer user questions."
 - Check the **Traces** tab — if you don't see a knowledge base tool call, the agent is relying on its training data instead.
 - Try a question that clearly requires document knowledge: "What is the exact part number for the tire curing press heating element?"
 
-</details>
-
-<details>
-<summary>Error: "too_many_requests: Too Many Requests"</summary>
+**Error: "too_many_requests: Too Many Requests"**
 
 - This means the model deployment has hit its rate limit (tokens per minute).
 - **Quick fix**: Switch the agent to a different model. Edit the **Model** dropdown and select another deployment (e.g. switch from `gpt-4.1` to `gpt-4o-mini`, or vice versa).
 - Wait 30–60 seconds before retrying — rate limits reset quickly.
 - If the error persists across all models, reduce your prompt size or wait a few minutes before continuing.
-
-</details>
 
 ## 🧠 Conclusion and Reflection
 

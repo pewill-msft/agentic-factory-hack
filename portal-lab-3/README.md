@@ -94,8 +94,7 @@ In this task you'll create a fresh agent and upload a maintenance manual PDF so 
 
 10. Once the file is attached and indexed, ask the agent these questions:
 
-<details>
-<summary>💬 Sample prompts for File Search</summary>
+**💬 Sample prompts for File Search**
 
 **Prompt 1** — Maintenance schedule:
 > "What is the quarterly maintenance task for the tire building machine TB-200/TB-300?"
@@ -105,8 +104,6 @@ In this task you'll create a fresh agent and upload a maintenance manual PDF so 
 
 **Prompt 3** — Part replacement:
 > "Walk me through the procedure for replacing heating elements on the tire curing press. What tools and parts do I need?"
-
-</details>
 
 11. Observe the responses:
    - Does the agent cite the uploaded document?
@@ -127,12 +124,9 @@ In this task you'll create a fresh agent and upload a maintenance manual PDF so 
 > [!TIP]
 > The Traces view is invaluable for understanding **how** the agent arrived at its answer. For File Search specifically, you can verify that the tool was invoked and that the response is grounded in the document — not hallucinated from the model's training data.
 
-<details>
-<summary>✅ Expected result</summary>
+**✅ Expected result**
 
 The agent should answer using specific content from the maintenance manual — part numbers (like TCP-HTR-4KW), torque specifications (25–35 Nm), and procedure steps. Answers should include citations or references to the uploaded file. In the Traces view, you should see `file_search` tool calls for each response.
-
-</details>
 
 ### Task 2: Code Interpreter
 
@@ -160,12 +154,9 @@ In this task you'll enable the Code Interpreter tool and use it to generate a da
 6. The agent should generate Python code, execute it, and return a chart image.
 7. Download the generated image file.
 
-<details>
-<summary>✅ Expected result</summary>
+**✅ Expected result**
 
 A grouped bar chart with 4 machines × 3 months. Bars above 3.0% are red, bars at or below 3.0% are green. A horizontal dashed line marks the quality threshold. The chart should be downloadable as a PNG or similar image file.
-
-</details>
 
 
 ### Task 3: Web Search (Before & After)
@@ -196,15 +187,12 @@ This task demonstrates the value of web search by showing the same question with
    - The agent now returns specific, current results.
    - Each fact should include a **citation** linking to the source webpage.
 
-<details>
-<summary>💬 What to observe</summary>
+**💬 What to observe**
 
 This before/after contrast is the clearest demonstration of why tools matter:
 - **Without web search**: The model is limited to its training data. It may not have detailed information about specific events.
 - **With web search**: The model can access current information and provide cited, verifiable answers.
 - The citations are critical for enterprise use — you can verify every claim the agent makes.
-
-</details>
 
 ## 🚀 Go Further
 
@@ -230,42 +218,30 @@ The dialog has three tabs:
 
 ## 🛠️ Troubleshooting and FAQ
 
-<details>
-<summary>File Search doesn't find content from the uploaded document</summary>
+**File Search doesn't find content from the uploaded document**
 
 - Ensure the file was fully processed (check for an "indexed" or "ready" status next to the file).
 - Large files may take a minute to index. Wait and try again.
 - Try asking a question that uses exact words from the document — this confirms the index is working.
 
-</details>
-
-<details>
-<summary>Code Interpreter doesn't generate a chart</summary>
+**Code Interpreter doesn't generate a chart**
 
 - Make sure Code Interpreter is enabled in the agent's tool configuration.
 - The model may occasionally return code instead of executing it. Ask: "Please execute the code and return the chart as a downloadable file."
 - Try simplifying the request: "Create a simple bar chart with these values: A=10, B=20, C=15."
 
-</details>
-
-<details>
-<summary>Web Search returns no results or generic responses</summary>
+**Web Search returns no results or generic responses**
 
 - Verify the Web Search tool is enabled and saved.
 - Try a query you know has current web results: "What is today's date?" or "Latest news about Azure."
 - Web search may not be available in all regions — ask your coach about your deployment region.
 
-</details>
-
-<details>
-<summary>Error: "too_many_requests: Too Many Requests"</summary>
+**Error: "too_many_requests: Too Many Requests"**
 
 - This means the model deployment has hit its rate limit (tokens per minute).
 - **Quick fix**: Switch the agent to a different model. Edit the **Model** dropdown and select another deployment (e.g. switch from `gpt-4.1` to `gpt-4o-mini`, or vice versa).
 - Wait 30–60 seconds before retrying — rate limits reset quickly.
 - If the error persists across all models, reduce your prompt size or wait a few minutes before continuing.
-
-</details>
 
 ## 🧠 Conclusion and Reflection
 

@@ -63,22 +63,18 @@ A **declarative workflow** lets you connect multiple agents in sequence. The out
 > [!TIP]
 > The agent page has four tabs: **Playground**, **Traces**, **Monitor**, and **Evaluation**. You also have **Chat**, **YAML**, and **Code** tabs on the right side of the playground. For now, stay on the Playground/Chat view.
 
-<details>
-<summary>✅ You should see something similar to this</summary>
+**✅ You should see something similar to this**
 
 The agent playground showing "TireAssistant" with the model set to gpt-4.1, Instructions filled in, Tools section with Web search, Knowledge and Memory sections, and the Chat panel on the right.
 
 ![Agent Created](./images/agent-created.png)
-
-</details>
 
 ### Task 2: Multi-Turn Conversation
 
 1. With `TireAssistant` selected, open the **chat** panel.
 2. Have a multi-turn conversation. Try this sequence:
 
-<details>
-<summary>💬 Sample conversation</summary>
+**💬 Sample conversation**
 
 **You**: "The tire building drum on machine TB-200 is vibrating excessively. What should I check first?"
 
@@ -89,8 +85,6 @@ The agent playground showing "TireAssistant" with the model set to gpt-4.1, Inst
 *Wait for the response, then follow up:*
 
 **You**: "What parts might I need to replace, and what's the estimated repair time?"
-
-</details>
 
 3. Notice how the agent maintains context across turns — it remembers you're discussing the TB-200 and the vibration reading without you repeating it.
 
@@ -112,14 +106,11 @@ The agent playground showing "TireAssistant" with the model set to gpt-4.1, Inst
    - Does it include repair time estimates?
    - Does it end with a safety reminder?
 
-<details>
-<summary>💬 What to observe</summary>
+**💬 What to observe**
 
 - The **original version** likely gave paragraph-style responses without repair time estimates.
 - The **new version** should produce structured bullet points, include time estimates, and add a safety reminder.
 - This demonstrates how instruction changes directly alter agent behavior — the "art" of instruction engineering.
-
-</details>
 
 ### Task 4: Enable Memory
 
@@ -136,14 +127,11 @@ The agent playground showing "TireAssistant" with the model set to gpt-4.1, Inst
    > "Which machine do I usually work on, and what's my certification level?"
 8. Verify the agent recalls the information from the previous conversation.
 
-<details>
-<summary>✅ Expected result</summary>
+**✅ Expected result**
 
 The agent should respond with something like: "You usually work on machine TB-200 in Building A, Line 3, and you're a Level 2 mechanical technician."
 
 If the agent doesn't recall, check that the Memory tool is enabled and that you saved the agent configuration before starting the new conversation.
-
-</details>
 
 > [!IMPORTANT]
 > Memory allows the agent to build persistent knowledge about the user across sessions. This is powerful for scenarios where technicians interact with the same agent over days or weeks — the agent learns their role, preferences, and common tasks.
@@ -224,14 +212,11 @@ You should see something like this:
    - First, the Researcher produces a detailed technical analysis.
    - Then, the Summarizer condenses it into a brief executive summary.
 
-<details>
-<summary>💬 What to observe</summary>
+**💬 What to observe**
 
 - The Researcher should produce a thorough, technical analysis with multiple root causes and diagnostic suggestions.
 - The Summarizer should distill this into a concise, business-friendly summary.
 - This demonstrates how agent specialization through workflows can handle complex tasks more effectively than a single agent.
-
-</details>
 
 ## 🚀 Go Further
 
@@ -281,40 +266,28 @@ Or explore a **Blank workflow** and experiment with the available node types: **
 
 ## 🛠️ Troubleshooting and FAQ
 
-<details>
-<summary>Agent creation fails or I can't find the Agents section</summary>
+**Agent creation fails or I can't find the Agents section**
 
 - Ensure you're in the correct project scope in the Foundry Portal.
 - The Agents section is under **Agents** in the left navigation. If you don't see it, your project may need the Agent Service enabled — ask your coach.
 
-</details>
-
-<details>
-<summary>Memory doesn't persist across conversations</summary>
+**Memory doesn't persist across conversations**
 
 - Verify the Memory tool is enabled in the agent's tool configuration.
 - Make sure you saved the agent configuration after enabling memory.
 - Try teaching a simple fact ("My name is Alex") and then starting a fresh conversation to test recall.
 - Memory may take a moment to index — wait 10–15 seconds before starting the new conversation.
 
-</details>
-
-<details>
-<summary>Workflow builder is not available</summary>
+**Workflow builder is not available**
 
 - Workflows are under **Agents** → **Workflows** tab (marked **Preview**). If you don't see the Workflows tab, the feature may not be available in your region.
 - As a workaround: run the Researcher agent manually, copy its output, and paste it as input to the Summarizer agent. You'll still experience the two-agent pattern, just with a manual handoff step.
 
-</details>
-
-<details>
-<summary>Agent responses don't follow the instructions</summary>
+**Agent responses don't follow the instructions**
 
 - Check that the instructions were saved (not just typed).
 - Try making the instructions more explicit: add "ALWAYS" or "NEVER" for critical rules.
 - Smaller models (gpt-4o-mini) may follow complex instructions less reliably than larger models (gpt-4.1). Try switching to a larger model if instruction compliance is an issue.
-
-</details>
 
 ## 🧠 Conclusion and Reflection
 

@@ -64,15 +64,12 @@ Your project already has **gpt-4.1** (flagship standard) and **gpt-4o-mini** (co
    - Filter by **Agent supported** capability → see which models work with the Agent Service
    - Filter by **Tool calling** capability → see models that can invoke tools (important for Lab 3)
 
-<details>
-<summary>💬 What to look for</summary>
+**💬 What to look for**
 
 - The catalog contains models from multiple providers — not just OpenAI (notice Qwen, Mistral, DeepSeek, Grok, and others).
 - Different models support different capabilities and inference tasks.
 - Some models are free to try, others require specific deployment types.
 - Notice the variety of model types: chat completion, audio generation, image to text, and more.
-
-</details>
 
 ### Task 2: Explore a Model Card
 
@@ -86,15 +83,12 @@ Your project already has **gpt-4.1** (flagship standard) and **gpt-4o-mini** (co
 3. On the **Details** tab, note the key capabilities (text, image processing, JSON Mode, function calling, structured outputs).
 4. Check the **Quick facts** sidebar on the Benchmarks tab — it shows model provider, type, lifecycle, input/output types, context window, and pricing link.
 
-<details>
-<summary>💬 Things to notice</summary>
+**💬 Things to notice**
 
 - The **Quick facts** sidebar shows context window size (e.g., 1048K input / 32K output for gpt-4.1).
 - The **Benchmarks** tab ranks models on 5 dimensions: Quality index, Safety (attack success rate), Latency, Throughput (tokens/sec), and Estimated cost.
 - **"Others who deployed this model also used"** suggests related models worth exploring.
 - The **Supported tools for agents** section on Details tells you which tools the model can use in the Agent Service.
-
-</details>
 
 ### Task 3: Compare & Benchmark Models
 
@@ -103,14 +97,11 @@ Your project already has **gpt-4.1** (flagship standard) and **gpt-4o-mini** (co
 3. Click the **Compare models** button to open a side-by-side comparison view.
 4. Select a second model (e.g., **gpt-4o-mini** or **gpt-5-pro**) and compare benchmark scores, pricing, and capabilities.
 
-<details>
-<summary>💬 What to observe</summary>
+**💬 What to observe**
 
 - gpt-4.1 ranks highly on throughput (95 tokens/sec) and cost ($3.50/1M tokens) but may trail on quality index compared to larger reasoning models.
 - Safety scores vary significantly — lower attack success rate is better.
 - The comparison helps you make informed trade-offs: quality vs. cost vs. latency for your specific use case.
-
-</details>
 
 ### Task 4: Deploy a New Model
 
@@ -131,14 +122,11 @@ You'll deploy **gpt-5-mini** — a reasoning model that "thinks before it answer
 > [!TIP]
 > For this lab, **Default settings** is perfectly fine. We use Custom settings here so you can see what's configurable. In production, you'd adjust rate limits and guardrails based on your workload.
 
-<details>
-<summary>✅ You should see something similar to this</summary>
+**✅ You should see something similar to this**
 
 After deploying, the Foundry Portal opens the model playground directly — showing the Instructions panel on the left, Tools, Knowledge, and Memory sections, and the Chat panel on the right with "What do you want to chat about?"
 
 ![Model Playground](./images/playground-after-deploy.png)
-
-</details>
 
 ### Task 5: Test in the Playground
 
@@ -194,14 +182,11 @@ After deploying, the Foundry Portal opens the model playground directly — show
    - **Reasoning Effort**: Try **high** (default) vs. **minimal**. Send the same question with each setting and notice the speed difference — minimal gives near-instant responses while high takes longer but may produce more thorough analysis.
    - **Max Completion Tokens**: Reduce from the default (16384) to a low value (e.g., 200) and resend a question. Watch how the model truncates its response mid-sentence when it hits the limit.
 
-<details>
-<summary>💬 What to observe about parameters</summary>
+**💬 What to observe about parameters**
 
 - **Reasoning Effort** controls how much "thinking" the model does before answering. For quick factual lookups, **minimal** or **low** is fast and sufficient. For complex multi-step analysis, **high** produces more thorough responses but takes longer.
 - **Max Completion Tokens** is a hard limit on response length. The model stops abruptly when it hits the cap — useful for controlling costs but can cut off important information.
 - These are the parameters available for reasoning models like gpt-5-mini.
-
-</details>
 
 ## 🚀 Go Further
 
@@ -231,39 +216,27 @@ After deploying, the Foundry Portal opens the model playground directly — show
 
 ## 🛠️ Troubleshooting and FAQ
 
-<details>
-<summary>Model deployment fails with a quota error</summary>
+**Model deployment fails with a quota error**
 
 - Your subscription may have reached its deployment quota for the region.
 - Try deploying with a lower rate limit (e.g., reduce tokens-per-minute).
 - Ask your coach if an alternative region or deployment type is available.
 
-</details>
-
-<details>
-<summary>The model I want isn't in the catalog</summary>
+**The model I want isn't in the catalog**
 
 - Not all models are available in all regions. Check the model card for supported regions.
 - Some models require specific subscription types or enrollment in a preview program.
 
-</details>
-
-<details>
-<summary>Playground responses are slow or timing out</summary>
+**Playground responses are slow or timing out**
 
 - Try reducing the **max tokens** parameter.
 - Check if the model is still provisioning (status should be "Succeeded").
 - High demand on shared quota can cause temporary slowdowns.
 
-</details>
-
-<details>
-<summary>Compare feature is not visible in the playground</summary>
+**Compare feature is not visible in the playground**
 
 - The **Compare models** button is in the top-right corner of the playground.
 - If not available, you can manually open two browser tabs — one for each model — and send the same prompt in both.
-
-</details>
 
 ## 🧠 Conclusion and Reflection
 
