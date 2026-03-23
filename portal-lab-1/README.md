@@ -222,6 +222,7 @@ The deployment page shows your new model with status "Succeeded", along with the
 1. In the playground, switch to a vision-capable model deployment — select **gpt-4.1** from the **Model** dropdown (gpt-4.1 supports image input).
 2. In the chat input, click the **attachment** icon (paperclip) to upload an image.
 3. Upload the tire defect image included in this repo: [`portal-lab-1/images/tire-defect-sample.png`](./images/tire-defect-sample.png)
+   - To download: open the file on GitHub and click the **Download raw file** button (↓ icon), or download the whole repo as a ZIP (green **Code** button → **Download ZIP**).
 4. Ask: "Analyze this image. What type of tire defect do you see, and what manufacturing process is most likely responsible?"
 5. Observe how the model interprets visual input alongside text.
 

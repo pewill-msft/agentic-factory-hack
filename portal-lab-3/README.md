@@ -10,6 +10,36 @@ In this lab you'll extend your agent with built-in tools — File Search, Code I
 
 - [Portal Lab 2](../portal-lab-2/README.md) completed (you have a working `TireAssistant` agent)
 - Access to the pre-provisioned **Storage Account** in the Azure Portal (set up in Challenge 0)
+- Lab data files downloaded to your local machine (see below)
+
+### Download Lab Files from GitHub
+
+This lab requires several data files. Since you're working directly from the Foundry Portal (not in a codespace), download the files from GitHub to your local machine first.
+
+**Option A — Download individual files:**
+
+1. Navigate to the repository on GitHub.
+2. Open the file you need (e.g. `portal-lab-3/data/contoso-tires-maintenance-manual.pdf`).
+3. Click the **Download raw file** button (↓ icon) in the top-right of the file view.
+4. Repeat for each file you need.
+
+**Option B — Download the whole folder as a ZIP:**
+
+1. Navigate to the repository's main page on GitHub.
+2. Click the green **Code** button → **Download ZIP**.
+3. Extract the ZIP and find the files under `portal-lab-3/data/`.
+
+**Files you'll need during this lab:**
+
+| File | Used in | Purpose |
+|------|---------|---------|
+| `portal-lab-3/data/contoso-tires-maintenance-manual.pdf` | Task 1 | Maintenance manual for File Search |
+| `portal-lab-3/data/defect-rates.csv` | Task 2 (optional) | Defect data for Code Interpreter |
+| `portal-lab-3/data/kb-wiki/tire_curing_press.md` | Task 4 | Machine diagnostic guide |
+| `portal-lab-3/data/kb-wiki/tire_building_machine.md` | Task 4 | Machine diagnostic guide |
+| `portal-lab-3/data/kb-wiki/tire_extruder.md` | Task 4 | Machine diagnostic guide |
+| `portal-lab-3/data/kb-wiki/tire_uniformity_machine.md` | Task 4 | Machine diagnostic guide |
+| `portal-lab-3/data/kb-wiki/banbury_mixer.md` | Task 4 | Machine diagnostic guide |
 
 ## 🎯 Objective
 
