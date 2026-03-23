@@ -324,7 +324,7 @@ Foundry IQ's hybrid approach lets you combine both in a single agent, with full 
 
 </details>
 
-## 🧠 Conclusion
+## 🧠 Conclusion and Reflection
 
 In this lab you learned to:
 - **File Search**: Upload documents and let the agent answer questions from their content

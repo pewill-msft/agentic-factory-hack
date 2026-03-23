@@ -282,7 +282,7 @@ Create 2–3 variants and test them with the same question. Note which style pro
 
 </details>
 
-## 🧠 Conclusion
+## 🧠 Conclusion and Reflection
 
 In this lab you learned to:
 - **Create** agents with custom instructions and personas

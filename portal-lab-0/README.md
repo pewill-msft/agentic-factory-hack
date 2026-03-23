@@ -62,9 +62,9 @@ A resource group containing 8–12 resources. The exact count may vary depending
 
 1. Open [ai.azure.com](https://ai.azure.com) in your browser and sign in with the same Azure account.
 2. You should see the **Foundry Portal** home page. Take a moment to orient yourself to the left navigation:
-   - **Discover** — Model catalog, benchmarks, and comparisons
-   - **Build** — Agents, tools, knowledge bases, and playgrounds
-   - **Manage** — Deployments, endpoints, connections, and settings
+   - **Models** — Model catalog, benchmarks, and comparisons
+   - **Tools** — Tool catalog and solution templates
+   - **Build** — Agents, playgrounds, knowledge bases, and deployments
 3. Select the pre-created **project** (it should appear under your recent projects, or use the project selector at the top).
 4. Confirm the project opens without permission errors.
 

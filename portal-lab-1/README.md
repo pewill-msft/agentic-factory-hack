@@ -14,7 +14,7 @@ In this lab you'll explore the Foundry model catalog, deploy a new model, and te
 
 The goals for this lab are:
 
-- Navigate the model catalog and use filters to discover models by provider, capability, and deployment type.
+- Navigate the model catalog and use filters to discover models by provider, capability, and industry.
 - Understand model cards: details, benchmarks, and existing deployments.
 - Deploy a new model and test it in the playground with a manufacturing-themed system prompt.
 - Experiment with model parameters and compare models side by side.
@@ -39,23 +39,25 @@ You already have three models deployed from Challenge 0. In this lab you'll expl
 
 ### Task 1: Browse the Model Catalog
 
-1. In the Foundry Portal, navigate to **Discover** → **Models**.
-2. You'll see the full model catalog. Explore the available **filters**:
-   - **Provider / Collection**: OpenAI, Meta, Microsoft, Mistral, Cohere, and others
-   - **Capabilities**: Chat completion, Embeddings, Image generation, Vision, Audio
-   - **Deployment options**: Global Standard, Standard, Provisioned, Serverless API
+1. In the Foundry Portal, navigate to **Models** in the left navigation.
+2. You'll see the full model catalog (11,000+ models). Explore the available **filters** on the left:
+   - **Collections**: Direct from Azure, Foundry Labs, Hugging Face, Fireworks on Foundry
+   - **Capabilities**: Agent supported, Fine-tuning, Reasoning, Streaming, Tool calling
+   - **Source**: Filter by model provider origin
+   - **Inference tasks**: Filter by task type (Chat completion, Image to text, Audio generation, etc.)
+   - **Industry**: Consumer goods, Financial services, Health and life sciences, Manufacturing, Mobility
 3. Try these filter combinations and note the results:
-   - Filter by **OpenAI** provider → see all OpenAI models available
-   - Filter by **Vision** capability → see which models support image input
-   - Filter by **Serverless API** deployment → see pay-per-token models
+   - Filter by **Manufacturing** industry → see models optimized for manufacturing use cases
+   - Filter by **Agent supported** capability → see which models work with the Agent Service
+   - Filter by **Tool calling** capability → see models that can invoke tools (important for Lab 3)
 
 <details>
 <summary>💬 What to look for</summary>
 
-- The catalog contains models from multiple providers — not just OpenAI.
-- Different models support different deployment types and capabilities.
+- The catalog contains models from multiple providers — not just OpenAI (notice Qwen, Mistral, DeepSeek, Grok, and others).
+- Different models support different capabilities and inference tasks.
 - Some models are free to try, others require specific deployment types.
-- Notice the model family groupings (e.g., GPT-4.1, GPT-4o, Phi-4, Llama).
+- Notice the variety of model types: chat completion, audio generation, image to text, and more.
 
 </details>
 
@@ -63,46 +65,57 @@ You already have three models deployed from Challenge 0. In this lab you'll expl
 
 1. Search for or click on **gpt-4.1** in the catalog.
 2. On the model card page, explore the tabs:
-   - **Details**: Description, capabilities, supported regions, context window size, pricing
-   - **Benchmarks**: Quality/speed/cost comparisons against other models
-   - **Existing Deployments**: See the deployment you already have in your project
-3. Take note of the context window size and the benchmark scores.
+   - **Details**: Key capabilities, use cases, pricing, technical specs, supported tools for agents
+   - **Deployments**: See deployments already in your project (useful to avoid duplicates)
+   - **Benchmarks**: Quality index, safety, latency, throughput, and estimated cost rankings
+   - **Responsible AI**: Safety and fairness information
+   - **License**: Model licensing terms
+3. On the **Details** tab, note the key capabilities (text, image processing, JSON Mode, function calling, structured outputs).
+4. Check the **Quick facts** sidebar on the Benchmarks tab — it shows model provider, type, lifecycle, input/output types, context window, and pricing link.
 
 <details>
 <summary>💬 Things to notice</summary>
 
-- The model card shows the maximum context window (input + output tokens).
-- Benchmarks compare the model against peers on standardized tasks.
-- The "Existing Deployments" tab shows deployments already in your project — useful to avoid duplicates.
+- The **Quick facts** sidebar shows context window size (e.g., 1048K input / 32K output for gpt-4.1).
+- The **Benchmarks** tab ranks models on 5 dimensions: Quality index, Safety (attack success rate), Latency, Throughput (tokens/sec), and Estimated cost.
+- **"Others who deployed this model also used"** suggests related models worth exploring.
+- The **Supported tools for agents** section on Details tells you which tools the model can use in the Agent Service.
 
 </details>
 
 ### Task 3: Compare & Benchmark Models
 
-1. From the model catalog, click **Browse leaderboard** (or navigate to the benchmarks section).
-2. The leaderboard ranks models on quality, speed, and cost metrics.
-3. Select two models (e.g., **gpt-4.1** and **gpt-4o-mini**) and click **Compare**.
-4. Review the side-by-side comparison: benchmark scores, pricing, context window, and supported capabilities.
+1. On the gpt-4.1 **Benchmarks** tab, review the "Comparing similar model benchmarks" section.
+2. You'll see ranked tables for **Quality index**, **Safety**, **Latency**, **Throughput**, and **Estimated cost** — each comparing gpt-4.1 against similar models.
+3. Click the **Compare models** button to open a side-by-side comparison view.
+4. Select a second model (e.g., **gpt-4o-mini** or **gpt-5-pro**) and compare benchmark scores, pricing, and capabilities.
 
 <details>
 <summary>💬 What to observe</summary>
 
-- Larger models typically score higher on quality benchmarks but cost more per token.
-- Smaller models (like gpt-4o-mini) are faster and cheaper, with a quality trade-off.
-- The comparison view helps you choose the right model for your use case: balance quality, speed, and cost.
+- gpt-4.1 ranks highly on throughput (95 tokens/sec) and cost ($3.50/1M tokens) but may trail on quality index compared to larger reasoning models.
+- Safety scores vary significantly — lower attack success rate is better.
+- The comparison helps you make informed trade-offs: quality vs. cost vs. latency for your specific use case.
 
 </details>
 
 ### Task 4: Deploy a New Model
 
-1. Navigate to **Discover** → **Models** and search for **gpt-5-mini**.
-2. Click on the model card, then click **Deploy**.
-3. In the deployment wizard:
-   - Leave the **deployment name** as the suggested default (or customize it).
-   - Select the **deployment type** (Global Standard is fine for this lab).
-   - Review the rate limits and pricing summary.
-4. Click **Deploy** and wait for provisioning to complete.
-5. Once the status shows **Succeeded**, note the deployment name — you'll use it in the playground.
+1. Navigate to **Models** in the left navigation and search for **gpt-5-mini**.
+2. Click on the model card, then click the **Deploy** button.
+3. You'll see two options:
+   - **Default settings** — Deploys with Global Standard and default quota. No extra configuration needed.
+   - **Custom settings** — Lets you configure deployment name, deployment type, tokens per minute rate limit, and guardrails.
+4. Select **Custom settings** to explore the options:
+   - **Deployment name**: Leave as the suggested default (e.g., `gpt-5-mini-2`) or customize it.
+   - **Deployment type**: Global Standard (pay per API call with the highest rate limits).
+   - **Tokens per Minute Rate Limit**: Adjust the slider or leave the default value.
+   - **Guardrails**: Leave as `DefaultV2`.
+5. Click **Deploy** and wait for provisioning to complete.
+6. Once the status shows **Succeeded**, note the deployment name — you'll use it in the playground.
+
+> [!TIP]
+> For this lab, **Default settings** is perfectly fine. We use Custom settings here so you can see what's configurable. In production, you'd adjust rate limits and guardrails based on your workload.
 
 <details>
 <summary>✅ You should see something similar to this</summary>
@@ -119,8 +132,8 @@ The deployment page shows your new model with status "Succeeded", along with the
 
 ### Task 5: Test in the Playground
 
-1. From the deployment page, click **Open in playground** (or navigate to **Build** → **Playgrounds** → **Chat playground** and select your new deployment).
-2. In the **System prompt** box, enter:
+1. After deployment completes you're already in the playground. If you navigated away, go to **Models** in the left navigation → click your deployment in the list (or click the model link) → **Open in playground**.
+2. In the **Instructions** box (left panel), enter:
 
    ```
    You are a manufacturing quality expert at Contoso Tires. You help engineers
@@ -129,24 +142,40 @@ The deployment page shows your new model with status "Succeeded", along with the
    and procedures when possible. Use clear, structured responses.
    ```
 
-3. Click **Apply** to save the system prompt.
-4. In the chat input, try these test messages one at a time:
+> [!IMPORTANT]
+> At this point the model has **no grounding data or tools** — it can only answer from its pre-trained knowledge. Responses may be generic or outdated because the model doesn't have access to Contoso Tires' actual machines, part numbers, or maintenance history. In **Lab 2** you'll create agents, and in **Lab 3** you'll connect tools and knowledge bases so the model can reference your real data.
 
-<details>
-<summary>💬 Sample prompts to try</summary>
+3. In the **Chat** tab on the right, try each prompt below. Each one demonstrates a different aspect of working with a plain LLM.
 
-**Prompt 1** — General knowledge:
-> "What are common causes of sidewall separation in radial tires?"
+**Prompt 1 — General knowledge** (model succeeds):
+> "What are the most common causes of sidewall separation in radial tires, and what manufacturing process controls can prevent it?"
 
-**Prompt 2** — Process explanation:
-> "Explain the vulcanization process and how temperature affects tire quality."
+   The model gives a solid, detailed answer — this is general tire manufacturing knowledge that exists in its training data. LLMs excel at synthesizing publicly available domain knowledge.
 
-**Prompt 3** — Troubleshooting:
-> "Our tire building machine TB-200 is showing drum vibration readings of 4.2 mm/s. Normal threshold is 3.0 mm/s. What should we check and in what order?"
+**Prompt 2 — Expose the knowledge gap** (no grounding data):
+> "How many work orders were opened for Contoso Tires machine TB-200 in the last quarter? Summarize the top issues reported."
 
-</details>
+   The model will either make up plausible-sounding details (hallucinate) or admit it doesn't know. This is the key limitation — without grounding (tools, knowledge bases), the model can only guess about company-specific data. In **Lab 3** you'll connect real data so it can answer accurately.
 
-5. Now experiment with the **parameters panel** (usually on the right side or in settings):
+**Prompt 3 — Structured output** (prompt engineering):
+> "List the top 5 tire defect types in a JSON array. Each object should have fields: defectName, severity (low/medium/high), and likelyCause."
+
+   Notice the model follows the requested format. This is **prompt engineering** — you can control output structure through instructions alone. Try asking for a markdown table or numbered list of the same data and compare.
+
+**Prompt 4 — System prompt influence** (change the Instructions):
+
+   First, send this message with the current Instructions:
+> "Should we replace our tire curing press or repair it? It's 12 years old with increasing downtime."
+
+   Now change the **Instructions** box to:
+   ```
+   You are a cost-conscious financial analyst at Contoso Tires. Always recommend
+   the most budget-friendly option. Quantify costs whenever possible. Be skeptical
+   of capital expenditure proposals.
+   ```
+   Send the **exact same question** again and compare the two responses. Notice how the system prompt dramatically changes the model's perspective, tone, and recommendation — same model, same question, different persona.
+
+4. Now experiment with the **parameters panel** (gear icon or settings in the right panel):
    - **Temperature**: Try 0.2 (more focused) vs. 1.0 (more creative). Send the same question with each setting.
    - **Top P**: Adjust from 0.9 to 0.5 and observe the difference.
    - **Max tokens**: Set a low limit (e.g., 100) and see how the model truncates its response.
@@ -168,7 +197,7 @@ The deployment page shows your new model with status "Succeeded", along with the
 
 ### Task 6: Compare Models in Playground
 
-1. In the playground, look for the **Compare** button (or open a second playground tab).
+1. In the playground, click the **Compare models** button in the top-right corner.
 2. Select your newly deployed **gpt-5-mini** on one side and **gpt-4o-mini** on the other.
 3. Set the same system prompt on both sides.
 4. Send the same question to both models simultaneously:
@@ -217,19 +246,26 @@ The deployment page shows your new model with status "Succeeded", along with the
 <details>
 <summary>Compare feature is not visible in the playground</summary>
 
-- The Compare feature may appear as a button in the playground toolbar or under a menu.
+- The **Compare models** button is in the top-right corner of the playground.
 - If not available, you can manually open two browser tabs — one for each model — and send the same prompt in both.
 
 </details>
 
-## 🧠 Conclusion
+## 🧠 Conclusion and Reflection
 
-In this lab you learned to:
+In this lab you used the **model playground** — an interactive environment for testing deployed models with instructions, parameters, and file attachments. The playground you used here is the *model-scoped* playground (accessed from a model's page). In the next lab you'll work with the *agent playground*, which adds tools, knowledge, and memory on top of a model. For more details on playground types, see [Playgrounds in Azure AI Foundry](https://learn.microsoft.com/en-us/azure/foundry/concepts/concept-playgrounds).
+
+You learned to:
 - **Discover** models through the catalog with filters and benchmarks
 - **Deploy** a model to your project with a specific configuration
-- **Test** models interactively in the playground with system prompts and parameter tuning
+- **Test** models interactively in the playground with instructions and parameter tuning
 - **Compare** models to understand quality, style, and cost trade-offs
 
-These skills form the foundation for the next lab, where you'll create agents that use these models.
+**Reflect on these questions:**
+- How did the model's responses change when you adjusted temperature?
+- Did the model give specific Contoso Tires machine or part details, or were responses generic? Why?
+- What would the model need (data, tools, context) to give accurate, company-specific answers?
+
+In the upcoming labs you'll address these gaps — **Lab 2** introduces agents that can maintain conversation context, and **Lab 3** connects tools and knowledge bases so the model can reference your actual maintenance data.
 
 **Next**: [Portal Lab 2 — Agents](../portal-lab-2/README.md)
