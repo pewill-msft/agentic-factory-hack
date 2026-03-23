@@ -35,6 +35,19 @@ You already have three models deployed from Challenge 0. In this lab you'll expl
 | **Playground** | Interactive chat UI to test a deployed model with system prompts, parameters, and file attachments |
 | **Benchmarks** | Performance comparisons across models on standardized tasks (quality, speed, cost) |
 
+### Choosing the right model
+
+Not all models serve the same purpose. Azure AI Foundry groups models into categories based on their strengths (see the [Model Choice Guide](https://learn.microsoft.com/en-us/azure/foundry/foundry-models/how-to/model-choice-guide)):
+
+| Category | Examples | Best for |
+|----------|----------|----------|
+| **Flagship reasoning** | gpt-5, gpt-5-pro | Complex multi-step analysis, planning, agentic workflows that require deep thinking |
+| **Cost-efficient reasoning** | gpt-5-mini | Everyday reasoning tasks with good quality at lower cost and faster speed |
+| **Flagship standard** | gpt-4.1 | High-throughput tasks, coding, function calling, structured output — no built-in reasoning |
+| **Cost-efficient standard** | gpt-4.1-mini, gpt-4.1-nano | High-volume, low-latency tasks where cost matters most |
+
+Your project already has **gpt-4.1** (flagship standard) and **gpt-4o-mini** (cost-efficient standard) deployed. In this lab you'll deploy **gpt-5-mini** — a cost-efficient reasoning model — so you can experience the difference between standard and reasoning models firsthand.
+
 ## ✅ Tasks
 
 ### Task 1: Browse the Model Catalog
@@ -100,6 +113,8 @@ You already have three models deployed from Challenge 0. In this lab you'll expl
 </details>
 
 ### Task 4: Deploy a New Model
+
+You'll deploy **gpt-5-mini** — a reasoning model that "thinks before it answers." Unlike gpt-4.1 (a standard model that generates tokens immediately), gpt-5-mini uses internal chain-of-thought reasoning to work through problems step by step. This makes it better at complex analysis, planning, and troubleshooting — exactly the kind of tasks a manufacturing quality expert faces. The trade-off is that reasoning models take longer per response, but you can control this with the **Reasoning Effort** parameter.
 
 1. Navigate to **Models** in the left navigation and search for **gpt-5-mini**.
 2. Click on the model card, then click the **Deploy** button.
@@ -175,18 +190,16 @@ The deployment page shows your new model with status "Succeeded", along with the
    ```
    Send the **exact same question** again and compare the two responses. Notice how the system prompt dramatically changes the model's perspective, tone, and recommendation — same model, same question, different persona.
 
-4. Now experiment with the **parameters panel** (gear icon or settings in the right panel):
-   - **Temperature**: Try 0.2 (more focused) vs. 1.0 (more creative). Send the same question with each setting.
-   - **Top P**: Adjust from 0.9 to 0.5 and observe the difference.
-   - **Max tokens**: Set a low limit (e.g., 100) and see how the model truncates its response.
+4. Now experiment with the **Parameters** panel (click the sliders icon next to the model selector):
+   - **Reasoning Effort**: Try **high** (default) vs. **minimal**. Send the same question with each setting and notice the speed difference — minimal gives near-instant responses while high takes longer but may produce more thorough analysis.
+   - **Max Completion Tokens**: Reduce from the default (16384) to a low value (e.g., 200) and resend a question. Watch how the model truncates its response mid-sentence when it hits the limit.
 
 <details>
 <summary>💬 What to observe about parameters</summary>
 
-- **Low temperature** (0.1–0.3): More deterministic, repeatable, focused answers. Good for factual/technical responses.
-- **High temperature** (0.8–1.2): More varied, creative responses. Each run may differ.
-- **Max tokens**: Hard limit on response length. The model stops mid-sentence if it hits the limit.
-- For manufacturing/technical use cases, **lower temperature** (0.2–0.5) is typically preferred.
+- **Reasoning Effort** controls how much "thinking" the model does before answering. For quick factual lookups, **minimal** or **low** is fast and sufficient. For complex multi-step analysis, **high** produces more thorough responses but takes longer.
+- **Max Completion Tokens** is a hard limit on response length. The model stops abruptly when it hits the cap — useful for controlling costs but can cut off important information.
+- These are the parameters available for reasoning models like gpt-5-mini. Other model types (e.g., gpt-4.1) may expose different parameters like Temperature and Top P.
 
 </details>
 
@@ -206,14 +219,14 @@ The deployment page shows your new model with status "Succeeded", along with the
 
 ### Task 7: Multimodal Input (Vision)
 
-1. In the playground, select a vision-capable model deployment (e.g., **gpt-4.1** supports vision).
-2. In the chat input, click the **attachment** icon to upload an image.
-3. Upload a tire defect image (or any manufacturing-related image you have available).
+1. In the playground, switch to a vision-capable model deployment — select **gpt-4.1** from the **Model** dropdown (gpt-4.1 supports image input).
+2. In the chat input, click the **attachment** icon (paperclip) to upload an image.
+3. Upload the tire defect image included in this repo: [`portal-lab-1/images/tire-defect-sample.png`](./images/tire-defect-sample.png)
 4. Ask: "Analyze this image. What type of tire defect do you see, and what manufacturing process is most likely responsible?"
 5. Observe how the model interprets visual input alongside text.
 
 > [!TIP]
-> If you don't have a tire defect image handy, try uploading any photo and asking the model to describe it in a manufacturing context. The goal is to experience multimodal input.
+> You can also try uploading any other photo and asking the model to describe it in a manufacturing context. The goal is to experience multimodal input.
 
 ## 🛠️ Troubleshooting and FAQ
 
@@ -262,7 +275,7 @@ You learned to:
 - **Compare** models to understand quality, style, and cost trade-offs
 
 **Reflect on these questions:**
-- How did the model's responses change when you adjusted temperature?
+- How did the model's responses change when you switched Reasoning Effort from high to minimal?
 - Did the model give specific Contoso Tires machine or part details, or were responses generic? Why?
 - What would the model need (data, tools, context) to give accurate, company-specific answers?
 
