@@ -135,6 +135,20 @@ The following challenges are included in this hackathon:
 > [!TIP]
 > While it's possible to rush through the challenges, we encourage you to pause and reflect along the way. Consider how each pattern relates to your own context: What business processes in your environment could benefit from coordinated AI agents? How might agents help orchestrate decisions across teams and systems? Taking time to think about real-world applicability will help you get the most out of this hackathon.
 
+## Portal Labs — No-Code Track
+
+Prefer a no-code approach? The **Portal Labs** cover the same Contoso Tires scenario entirely through the **Foundry Portal** ([ai.azure.com](https://ai.azure.com)) — no Python, .NET, or command line required. These labs run as an independent track alongside the coding challenges and share the same pre-provisioned environment from Challenge 0.
+
+| Lab | Topic | Duration |
+|-----|-------|----------|
+| **Portal Lab 0**: **[Environment Validation](portal-lab-0/README.md)** | Verify Azure resources, Foundry Portal access, and model deployments | ~10 min |
+| **Portal Lab 1**: **[Models](portal-lab-1/README.md)** | Discover the model catalog, deploy a model, and test in the playground | ~45 min |
+| **Portal Lab 2**: **[Agents](portal-lab-2/README.md)** | Create agents, enable memory, and build a multi-agent workflow | ~45 min |
+| **Portal Lab 3**: **[Tools & Foundry IQ](portal-lab-3/README.md)** | Use File Search, Code Interpreter, Web Search, and enterprise knowledge bases | ~45 min |
+
+> [!NOTE]
+> The Portal Labs and coding Challenges are independent tracks. You can complete either or both. Portal Lab 0 requires the environment from Challenge 0 to be provisioned.
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a

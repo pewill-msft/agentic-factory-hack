@@ -1,0 +1,13 @@
+Machine,Month,DefectCount,DefectRate,DefectType
+TB-200,2025-01,12,2.1%,Sidewall Separation
+TB-200,2025-02,15,2.6%,Sidewall Separation
+TB-200,2025-03,11,1.9%,Ply Misalignment
+TB-300,2025-01,19,3.4%,Bead Unseating
+TB-300,2025-02,22,3.8%,Bead Unseating
+TB-300,2025-03,17,3.0%,Tread Separation
+TC-100,2025-01,24,4.2%,Cure Inconsistency
+TC-100,2025-02,20,3.5%,Cure Inconsistency
+TC-100,2025-03,26,4.5%,Undercure
+BM-500,2025-01,15,2.7%,Compound Variation
+BM-500,2025-02,13,2.3%,Compound Variation
+BM-500,2025-03,16,2.8%,Mixing Temperature
