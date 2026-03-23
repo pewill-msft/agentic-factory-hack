@@ -1,8 +1,8 @@
-# Portal Lab 3: Tools & Foundry IQ
+# Portal Lab 3: Tools
 
-In this lab you'll extend your agent with built-in tools — File Search, Code Interpreter, and Web Search — and then connect a Foundry IQ knowledge base grounded in your factory's documentation. No code required.
+In this lab you'll extend your agent with built-in tools — File Search, Code Interpreter, and Web Search. No code required.
 
-← [Portal Lab 2](../portal-lab-2/README.md) | **Portal Lab 3**
+← [Portal Lab 2](../portal-lab-2/README.md) | **Portal Lab 3** | [Portal Lab 4](../portal-lab-4/README.md) →
 
 **Expected duration**: 45 min
 
@@ -35,11 +35,6 @@ This lab requires several data files. Since you're working directly from the Fou
 |------|---------|---------|
 | `portal-lab-3/data/contoso-tires-maintenance-manual.pdf` | Task 1 | Maintenance manual for File Search |
 | `portal-lab-3/data/defect-rates.csv` | Task 2 (optional) | Defect data for Code Interpreter |
-| `portal-lab-3/data/kb-wiki/tire_curing_press.md` | Task 4 | Machine diagnostic guide |
-| `portal-lab-3/data/kb-wiki/tire_building_machine.md` | Task 4 | Machine diagnostic guide |
-| `portal-lab-3/data/kb-wiki/tire_extruder.md` | Task 4 | Machine diagnostic guide |
-| `portal-lab-3/data/kb-wiki/tire_uniformity_machine.md` | Task 4 | Machine diagnostic guide |
-| `portal-lab-3/data/kb-wiki/banbury_mixer.md` | Task 4 | Machine diagnostic guide |
 
 ## 🎯 Objective
 
@@ -48,8 +43,6 @@ The goals for this lab are:
 - Use **File Search** to let the agent query an uploaded document.
 - Use **Code Interpreter** to have the agent generate data visualizations and return files.
 - See the contrast of **Web Search** — before and after enabling live web access.
-- Create a **Foundry IQ** knowledge base from existing blob storage documents and connect it to your agent.
-- Understand how Foundry IQ performs agentic retrieval: query decomposition, parallel search, reranking, and cited responses.
 
 ## 🧭 Context and Background
 
@@ -63,39 +56,6 @@ The Foundry Portal offers several built-in tools:
 | **Code Interpreter** | Run Python code in a sandboxed environment — generate charts, perform calculations, process files |
 | **Web Search** | Search the live web for current information and return cited results |
 | **Memory** | Persist facts across conversations (you used this in Lab 2) |
-
-### Foundry IQ
-
-**Foundry IQ** is an enterprise knowledge retrieval system that goes beyond simple file search. It connects to data sources (blob storage, SharePoint, etc.), indexes the content, and provides **agentic retrieval** — a multi-step process:
-
-```
-User question
-    ↓
-❶ Query decomposition — break complex questions into sub-queries
-    ↓
-❷ Parallel search — search across all connected knowledge sources simultaneously
-    ↓
-❸ Reranking — score and prioritize the most relevant results
-    ↓
-❹ Cited response — generate an answer with inline citations to source documents
-```
-
-This is more sophisticated than uploading a single file — Foundry IQ handles large knowledge bases with multiple documents and provides traceable answers.
-
-### The Three IQ Workloads
-
-Microsoft provides three **IQ workloads** that give agents access to different aspects of your organization:
-
-| IQ Workload | What it does | Data sources |
-|-------------|-------------|-------------|
-| **Foundry IQ** | Managed knowledge layer for enterprise data | Azure Blob Storage, SharePoint, OneLake, web — structured and unstructured content |
-| **Fabric IQ** | Semantic intelligence layer for Microsoft Fabric | OneLake, Power BI — business data, ontologies, semantic models |
-| **Work IQ** | Contextual intelligence layer for Microsoft 365 | Documents, meetings, chats, workflows — collaboration signals |
-
-Each IQ workload is standalone, but they can be used together to give agents comprehensive organizational context. In this lab you'll work with **Foundry IQ** — the one focused on grounding agents in enterprise knowledge with permission-aware, cited responses.
-
-> [!TIP]
-> Learn more: [What is Foundry IQ?](https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/what-is-foundry-iq)
 
 ## ✅ Tasks
 
@@ -231,145 +191,12 @@ This before/after contrast is the clearest demonstration of why tools matter:
 
 </details>
 
-### Task 4: Upload Wiki Files & Create a Foundry IQ Knowledge Base
-
-In this task you'll upload machine diagnostic documents to blob storage and then create a Foundry IQ knowledge base so your agent can answer questions grounded in those documents.
-
-**Step 1 — Upload wiki files to blob storage:**
-
-This repository includes 5 machine diagnostic guides in [`portal-lab-3/data/kb-wiki/`](./data/kb-wiki/):
-
-| File | Content |
-|------|---------|
-| `tire_curing_press.md` | Curing press faults, diagnostics, corrective actions |
-| `tire_building_machine.md` | Building machine vibration and tension issues |
-| `tire_extruder.md` | Extruder temperature and pressure faults |
-| `tire_uniformity_machine.md` | Uniformity testing and measurement issues |
-| `banbury_mixer.md` | Mixing temperature and rotor faults |
-
-You need to upload these to the pre-provisioned **Storage Account** so Foundry IQ can index them.
-
-1. Open the [Azure Portal](https://portal.azure.com) and navigate to your resource group (e.g. `rg-foundry-demo`).
-2. Open the **Storage account** (name starts with `msagthack...`).
-3. In the left navigation, click **Storage browser**.
-4. Expand **Blob containers** — you'll see a `machine-wiki` container (created during Challenge 0 provisioning). Click on it.
-
-> [!NOTE]
-> If the `machine-wiki` container doesn't exist yet, click **+ Add container** at the top, name it `machine-wiki`, and click **Create**.
-
-5. Click **Upload** in the toolbar at the top of the container view.
-6. In the upload dialog, click **Browse for files** and select all 5 `.md` files from the `portal-lab-3/data/kb-wiki/` folder on your local machine.
-7. Click **Upload**. The files should upload in seconds.
-8. Verify all 5 files appear in the `machine-wiki` container.
-
-**Step 2 — Create a knowledge base in Foundry IQ:**
-
-1. Go back to the **Foundry Portal** (ai.azure.com) and navigate to **Knowledge** in the left navigation (under the **Build** section). This opens the **Foundry IQ** page with two tabs: **Knowledge bases** and **Indexes**.
-2. Click **Create a knowledge base**.
-3. The **Choose a knowledge type** dialog opens. You'll see several options:
-   - Azure AI Search Index
-   - **Azure Blob Storage** ← select this one
-   - Web
-   - Microsoft SharePoint (Remote)
-   - Microsoft SharePoint (Indexed)
-   - Microsoft OneLake
-4. The **Create a knowledge source** form opens with these fields:
-   - **Name**: Enter a name like `machine-wiki-blob` (or keep the auto-generated name).
-   - **Description**: Enter something like `Machine diagnostic guides for Contoso Tires factory equipment`.
-   - **Storage account**: Select your pre-provisioned storage account from the dropdown.
-   - **Container name**: Select `machine-wiki`.
-   - **Authentication type**: Change to **API Key**.
-   - **Content extraction mode**: Leave as **minimal**.
-   - **Include embedding model**: Leave checked (recommended). The **Embedding model** should show `text-embedding-3-large`.
-   - **Chat completions model**: Should show `gpt-4.1`.
-5. Click **Create** and wait for indexing to complete.
-
-<details>
-<summary>✅ You should see something similar to this</summary>
-
-The Foundry IQ page showing your knowledge base with status **Active**, the knowledge source name, and the connection to your AI Search resource.
-
-<!-- TODO: Replace with actual screenshot -->
-![Foundry IQ Knowledge Base](./images/placeholder-foundry-iq-kb.png)
-
-</details>
-
-> [!NOTE]
-> Indexing may take 2–5 minutes depending on the number of files and their size. You'll see the status change from "Creating" to **Active** when ready.
-
-### Task 5: Connect Knowledge Base to Agent & Test
-
-1. Go back to your `TireAssistant` agent in the Foundry Portal.
-2. First, update the agent's **Instructions** to tell it to use the knowledge base. Replace the existing instructions with:
-
-   ```
-   You are a tire manufacturing assistant at Contoso Tires.
-
-   Use the knowledge base tool to answer user questions about machine
-   diagnostics, fault codes, maintenance procedures, and repair times.
-   If the knowledge base doesn't contain the answer, respond with
-   "I don't have that information in the maintenance documentation."
-
-   When you use information from the knowledge base, include citations
-   to the retrieved sources.
-
-   Always be specific about machine types and part numbers when possible.
-   Structure your responses with clear steps.
-   ```
-
-   > [!TIP]
-   > Explicitly telling the agent to "use the knowledge base tool" increases the chance it will actually call the tool instead of relying on its own training data. See [Optimize agent instructions for knowledge retrieval](https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/foundry-iq-connect?tabs=foundry%2Cpython#optimize-agent-instructions-for-knowledge-retrieval) for more guidance.
-
-3. In the left-hand configuration panel, find the **Knowledge** section (marked **Preview**) and click **Add**.
-4. From the dropdown, select **Connect to Foundry IQ**.
-5. The **Connect to Foundry IQ** dialog opens:
-   - **Connection**: Your AI Search connection is pre-selected (e.g. `msagthack-aifoundry-...-aisearch`).
-   - **Knowledge base**: Select the knowledge base you just created from the dropdown.
-6. Click **Connect** (or **Add**). The knowledge base now appears under the Knowledge section.
-7. Click **Save** to create a new agent version with the knowledge base connected.
-8. Now test with documentation-grounded questions:
-
-<details>
-<summary>💬 Sample prompts for Foundry IQ</summary>
-
-**Prompt 1** — Specific diagnostics:
-> "What are the diagnostic steps for excessive curing temperature on a tire curing press?"
-
-**Prompt 2** — Threshold values:
-> "What is the normal vibration threshold for a tire building machine, and what happens when it's exceeded?"
-
-**Prompt 3** — Cross-document query:
-> "Compare the estimated repair times for drum bearing replacement on the tire building machine versus rotor blade replacement on the Banbury mixer."
-
-**Prompt 4** — Specific fault lookup:
-> "What are the likely causes and corrective actions for the fault type 'ply_tension_excessive'?"
-
-</details>
-
-9. Verify the responses:
-   - Are **citations** included, showing which source document was used?
-   - Do the answers match the content in the wiki markdown files?
-   - Try the cross-document query (Prompt 3) — Foundry IQ should pull from multiple documents and combine the information.
-
-<details>
-<summary>💬 How Foundry IQ works behind the scenes</summary>
-
-When you ask a question:
-1. **Query decomposition**: The system breaks your question into targeted sub-queries.
-2. **Parallel search**: Each sub-query searches across all 5 indexed documents simultaneously.
-3. **Reranking**: Results are scored for relevance and the top matches are selected.
-4. **Cited response**: The agent generates an answer that includes inline citations like `[tire_building_machine.md]`.
-
-This is fundamentally different from File Search (Task 1), which works with individual uploaded files. Foundry IQ handles enterprise-scale knowledge bases with multiple documents and provides traceable, cited answers.
-
-</details>
-
 ## 🚀 Go Further
 
 > [!NOTE]
-> Finished early? These optional exercises let you explore additional tool types and advanced knowledge configurations.
+> Finished early? These optional exercises let you explore additional tool types.
 
-### Task 6: Explore the Tool Catalog
+### Task 4: Explore the Tool Catalog
 
 1. In the agent playground, click **Add** in the **Tools** section to open the **Select a tool** dialog.
 2. Browse the three tabs:
@@ -385,51 +212,6 @@ The dialog has three tabs:
 3. Explore what's available. Think about which tools could enhance your manufacturing agent:
    - Could a Remote MCP tool connect to a real CMMS (maintenance management system)?
    - Could a Custom tool look up real-time parts inventory?
-
-### Task 7: Explore the Knowledge Base in Azure AI Search
-
-In Task 4 you created a knowledge base through Foundry IQ. Behind the scenes, this created resources in your **Azure AI Search** service. In this task you'll explore those resources directly.
-
-**Step 1 — Browse the knowledge base in Azure AI Search:**
-
-1. Open the [Azure Portal](https://portal.azure.com) and navigate to your resource group.
-2. Open the **Azure AI Search** service (name starts with `msagthack-search-...`).
-3. In the left navigation, expand **Agentic retrieval** and click **Knowledge bases**.
-4. You'll see your knowledge base listed with its name, knowledge source, and chat completion model (`gpt-4.1`).
-5. Click on your knowledge base to open its detail page. You'll see:
-   - **Basics** section with the knowledge source (status should be **Active**) and last sync time.
-   - **Retrieval** section with **Reasoning effort** (Minimal) and **Retrieval instructions** — this is where you could add instructions to guide knowledge source selection and query planning.
-   - **Chat completion model** — the model used for agentic retrieval (query decomposition and reranking).
-   - **Output configurations** — settings for how results are returned.
-
-**Step 2 — Browse the indexed content:**
-
-1. Still on the knowledge base detail page, notice the main content area shows the **indexed documents** from your wiki files.
-2. Scroll through the content — you'll see the full structure of each document: titles, operating thresholds, fault types, diagnostics, corrective actions, and estimated repair times.
-3. This confirms all 5 machine wiki files were properly indexed and are searchable.
-
-**Step 3 — Test a query directly:**
-
-1. At the bottom of the knowledge base detail page, find the **"Enter your message..."** input box.
-2. Try a query directly against the knowledge base (bypassing the agent):
-   > "What are the diagnostic steps for building drum vibration on a tire building machine?"
-3. Observe the response — it should return structured results from the indexed documents with source references.
-4. Try a cross-document query:
-   > "Which machine has the longest estimated repair time for its most critical fault?"
-
-<details>
-<summary>💬 Why explore the Search service directly?</summary>
-
-Understanding what's behind Foundry IQ helps you:
-- **Debug** issues when the agent doesn't return expected results — is the content indexed? Is the query finding it?
-- **Tune** retrieval by adjusting reasoning effort, retrieval instructions, or output configurations.
-- **Verify** that your knowledge sources are synced and active.
-- **Compare** the raw retrieval results with what the agent returns — this shows you how much the agent adds through its instructions and conversation context.
-
-</details>
-
-> [!TIP]
-> You can also explore **Knowledge sources** (under Agentic retrieval) to see the blob storage connection details, and **Indexes** (under Search management) to see the underlying search index created by Foundry IQ.
 
 ## 🛠️ Troubleshooting and FAQ
 
@@ -470,49 +252,13 @@ Understanding what's behind Foundry IQ helps you:
 
 </details>
 
-<details>
-<summary>Foundry IQ indexing seems stuck</summary>
-
-- Indexing 5 small markdown files should complete in 2–5 minutes.
-- If you get an error like *"Unable to retrieve blob container... using your managed identity"*, change the **Authentication type** to **API Key** and try again.
-- If stuck beyond 10 minutes, verify the 5 `.md` files are actually in the `machine-wiki` container (go to Storage browser and check).
-- Try deleting the knowledge base and recreating it with the connection.
-
-</details>
-
-<details>
-<summary>Citations don't appear in agent responses</summary>
-
-- Not all question types trigger citations. Try asking a very specific factual question: "What is the normal drum vibration threshold for a tire building machine?"
-- Check that the knowledge base shows as "Connected" or "Active" on the agent.
-- Some models follow citation instructions more reliably than others — try switching to gpt-4.1.
-
-</details>
-
 ## 🧠 Conclusion and Reflection
 
 In this lab you learned to:
 - **File Search**: Upload documents and let the agent answer questions from their content
 - **Code Interpreter**: Generate visualizations and perform calculations within a sandboxed environment
 - **Web Search**: Add live web access and see the clear before/after difference
-- **Foundry IQ**: Build an enterprise knowledge base from blob storage and get cited, multi-document answers
 
-Together, these tools transform a basic chat model into a capable enterprise assistant — grounded in your data, able to compute and visualize, and connected to the live web when needed.
+Together, these tools transform a basic chat model into a capable assistant — grounded in your data, able to compute and visualize, and connected to the live web when needed.
 
----
-
-## 🎉 Congratulations!
-
-You've completed all four Portal Labs. Here's what you've accomplished:
-
-| Lab | What you learned |
-|-----|-----------------|
-| **Portal Lab 0** | Validated your environment and confirmed resource access |
-| **Portal Lab 1** | Discovered, deployed, and tested models in the playground |
-| **Portal Lab 2** | Created agents with memory and built multi-agent workflows |
-| **Portal Lab 3** | Extended agents with tools and enterprise knowledge |
-
-All of this was done through the Foundry Portal — no code required. These same capabilities can also be accessed programmatically through the Foundry SDK (Python, .NET) as demonstrated in Challenges 1–4 of this hackathon.
-
-> [!TIP]
-> Interested in the code-first approach? Check out [Challenge 1](../challenge-1/README.md) to see how to build agents programmatically in Python, or [Challenge 2](../challenge-2/README.md) for the .NET/C# approach.
+Next up: [Portal Lab 4](../portal-lab-4/README.md) — where you'll build an enterprise knowledge base with **Foundry IQ** and learn the difference between tool-based search and RAG.

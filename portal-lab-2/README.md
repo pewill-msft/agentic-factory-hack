@@ -322,4 +322,4 @@ In this lab you learned to:
 
 You've seen how agents go beyond simple chat — they combine models with instructions, memory, and workflows to create consistent, specialized assistants.
 
-**Next**: [Portal Lab 3 — Tools & Foundry IQ](../portal-lab-3/README.md)
+**Next**: [Portal Lab 3 — Tools](../portal-lab-3/README.md)

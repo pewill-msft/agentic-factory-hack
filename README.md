@@ -144,7 +144,8 @@ Prefer a no-code approach? The **Portal Labs** cover the same Contoso Tires scen
 | **Portal Lab 0**: **[Environment Validation](portal-lab-0/README.md)** | Verify Azure resources, Foundry Portal access, and model deployments | ~10 min |
 | **Portal Lab 1**: **[Models](portal-lab-1/README.md)** | Discover the model catalog, deploy a model, and test in the playground | ~45 min |
 | **Portal Lab 2**: **[Agents](portal-lab-2/README.md)** | Create agents, enable memory, and build a multi-agent workflow | ~45 min |
-| **Portal Lab 3**: **[Tools & Foundry IQ](portal-lab-3/README.md)** | Use File Search, Code Interpreter, Web Search, and enterprise knowledge bases | ~45 min |
+| **Portal Lab 3**: **[Tools](portal-lab-3/README.md)** | Use File Search, Code Interpreter, and Web Search to extend your agent | ~30 min |
+| **Portal Lab 4**: **[Foundry IQ & Knowledge](portal-lab-4/README.md)** | Build an enterprise knowledge base with Foundry IQ and agentic retrieval | ~45 min |
 
 > [!NOTE]
 > The Portal Labs and coding Challenges are independent tracks. You can complete either or both. Portal Lab 0 requires the environment from Challenge 0 to be provisioned.
