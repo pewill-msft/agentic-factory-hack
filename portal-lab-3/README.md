@@ -52,6 +52,21 @@ User question
 
 This is more sophisticated than uploading a single file — Foundry IQ handles large knowledge bases with multiple documents and provides traceable answers.
 
+### The Three IQ Workloads
+
+Microsoft provides three **IQ workloads** that give agents access to different aspects of your organization:
+
+| IQ Workload | What it does | Data sources |
+|-------------|-------------|-------------|
+| **Foundry IQ** | Managed knowledge layer for enterprise data | Azure Blob Storage, SharePoint, OneLake, web — structured and unstructured content |
+| **Fabric IQ** | Semantic intelligence layer for Microsoft Fabric | OneLake, Power BI — business data, ontologies, semantic models |
+| **Work IQ** | Contextual intelligence layer for Microsoft 365 | Documents, meetings, chats, workflows — collaboration signals |
+
+Each IQ workload is standalone, but they can be used together to give agents comprehensive organizational context. In this lab you'll work with **Foundry IQ** — the one focused on grounding agents in enterprise knowledge with permission-aware, cited responses.
+
+> [!TIP]
+> Learn more: [What is Foundry IQ?](https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/what-is-foundry-iq)
+
 ## ✅ Tasks
 
 ### Task 1: File Search
