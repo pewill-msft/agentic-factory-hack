@@ -177,7 +177,7 @@ Think of it this way: the **knowledge base** is the "brain" that decides how to 
 
 **Step 2 — Create the knowledge base:**
 
-6. After the knowledge source is created, the **Create a new knowledge base** form opens. Configure it:
+6. After the knowledge source is created, the **Create a new knowledge base** form is shown. Configure it:
    - **Name**: Enter `machine-diagnostics-kb`.
    - **Description**: Enter `Knowledge base for manufacturing diagnostics`.
    - **Chat completions model**: Select `gpt-4.1`.
@@ -194,21 +194,12 @@ Think of it this way: the **knowledge base** is the "brain" that decides how to 
 >
 > A single knowledge base can contain **multiple knowledge sources**. For example, you could later add a SharePoint source for safety procedures or a web source for live vendor documentation — all queried together when the agent retrieves information.
 
-<details>
-<summary>✅ You should see something similar to this</summary>
-
-The Create a new knowledge base page showing the name, chat completions model (gpt-4.1), retrieval reasoning effort (Minimal), output mode (Extractive data), and the knowledge source `machine-diagnostics-ks` with type Azure Blob Storage and status Creating.
-
-![Foundry IQ Knowledge Base](./images/foundry-iq-kb.png)
-
-</details>
-
 ### Task 3: Connect Knowledge Base to Agent & Test
 
 1. After saving the knowledge base, you'll see a **Use in an agent** dropdown button at the top of the page (next to **Save**). Click it.
 2. A list of your recent agents appears. Select **TireToolsAgent**.
 
-   ![Use in an agent](./images/use-in-agent.png)
+![Use in an agent](./images/use-in-agent.png)
 
 3. This opens the `TireToolsAgent` playground with the knowledge base already connected. You should see it listed under the **Knowledge** section in the left panel.
 4. Update the agent's **Instructions** to tell it to use the knowledge base. Replace the existing instructions with:
