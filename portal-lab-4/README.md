@@ -8,8 +8,8 @@ In this lab you'll create a Foundry IQ knowledge base from your factory's diagno
 
 **Prerequisites**:
 
-- [Portal Lab 3](../portal-lab-3/README.md) completed (you have a `TireAssistant` agent with tools enabled)
-- Access to the pre-provisioned **Storage Account** in the Azure Portal (set up in Challenge 0)
+- [Portal Lab 3](../portal-lab-3/README.md) completed (you have a `TireToolsAgent` agent with tools enabled)
+- Access to the pre-provisioned **Storage Account** in the Azure Portal (verfied in [Portal Lab 0](../portal-lab-0/README.md) )
 - Lab data files downloaded to your local machine (see below)
 
 ### Download Lab Files from GitHub
@@ -129,82 +129,124 @@ You need to upload these to the pre-provisioned **Storage Account** so Foundry I
 1. Open the [Azure Portal](https://portal.azure.com) and navigate to your resource group (e.g. `rg-foundry-demo`).
 2. Open the **Storage account** (name starts with `msagthack...`).
 3. In the left navigation, click **Storage browser**.
-4. Expand **Blob containers** — you'll see a `machine-wiki` container (created during Challenge 0 provisioning). Click on it.
+4. Expand **Blob containers**. You need to create a new container for the diagnostic files:
+   - Click **+ Add container** at the top.
+   - In the **Name** field, enter `machine-diagnostics`.
+   - Leave **Anonymous access level** as **Private (no anonymous access)**.
+   - Click **Create**.
 
-> [!NOTE]
-> If the `machine-wiki` container doesn't exist yet, click **+ Add container** at the top, name it `machine-wiki`, and click **Create**.
+   ![Create blob container](./images/create-blob-container.png)
 
-5. Click **Upload** in the toolbar at the top of the container view.
-6. In the upload dialog, click **Browse for files** and select all 5 `.md` files from the `portal-lab-4/data/kb-wiki/` folder on your local machine.
-7. Click **Upload**. The files should upload in seconds.
-8. Verify all 5 files appear in the `machine-wiki` container.
+5. Click on the newly created `machine-diagnostics` container to open it.
+6. Click **Upload** in the toolbar at the top of the container view.
+7. In the upload dialog, click **Browse for files** and select all 5 `.md` files from the `portal-lab-4/data/kb-wiki/` folder on your local machine.
+8. Click **Upload**. The files should upload in seconds.
+9. Verify all 5 files appear in the `machine-diagnostics` container.
 
 ### Task 2: Create a Foundry IQ Knowledge Base
 
+Before diving in, it helps to understand the two key concepts:
+
+| Concept | What it is |
+|---------|------------|
+| **Knowledge base** | A top-level container that defines how retrieval works — which model reasons over queries, what output mode to use, and what retrieval instructions to follow. A knowledge base can reference **multiple knowledge sources**. |
+| **Knowledge source** | A pointer to a specific data store (Blob Storage, SharePoint, web, etc.). Each knowledge source maps to exactly one data structure. When you query a knowledge base, it fans out subqueries to all its knowledge sources and merges the results. |
+
+Think of it this way: the **knowledge base** is the "brain" that decides how to search, and **knowledge sources** are the "libraries" it searches through. In production, you might have one knowledge base with separate sources for maintenance manuals, parts catalogs, and safety procedures — all queried together in a single request.
+
+> [!TIP]
+> Learn more: [What is a knowledge source?](https://learn.microsoft.com/en-us/azure/search/agentic-knowledge-source-overview) | [How to create a knowledge base](https://learn.microsoft.com/en-us/azure/search/agentic-retrieval-how-to-create-knowledge-base)
+
+**Step 1 — Create the knowledge source:**
+
 1. Go back to the **Foundry Portal** (ai.azure.com) and navigate to **Knowledge** in the left navigation (under the **Build** section). This opens the **Foundry IQ** page with two tabs: **Knowledge bases** and **Indexes**.
-2. Click **Create a knowledge base**.
-3. The **Choose a knowledge type** dialog opens. You'll see several options:
-   - Azure AI Search Index
-   - **Azure Blob Storage** ← select this one
-   - Web
-   - Microsoft SharePoint (Remote)
-   - Microsoft SharePoint (Indexed)
-   - Microsoft OneLake
-4. The **Create a knowledge source** form opens with these fields:
-   - **Name**: Enter a name like `machine-wiki-blob` (or keep the auto-generated name).
-   - **Description**: Enter something like `Machine diagnostic guides for Contoso Tires factory equipment`.
+2. Click **Create a knowledge base**. The first dialog that opens is **Create a knowledge source** — this is where you point to your data.
+3. You'll see several knowledge source types. Select **Azure Blob Storage**.
+4. The **Create a knowledge source** form opens:
+   - **Name**: Enter `machine-diagnostics-ks`.
+   - **Description**: Enter `Machine diagnostic guides for Contoso Tires factory equipment`.
    - **Storage account**: Select your pre-provisioned storage account from the dropdown.
-   - **Container name**: Select `machine-wiki`.
+   - **Container name**: Select `machine-diagnostics`.
    - **Authentication type**: Change to **API Key**.
    - **Content extraction mode**: Leave as **minimal**.
-   - **Include embedding model**: Leave checked (recommended). The **Embedding model** should show `text-embedding-3-large`.
-   - **Chat completions model**: Should show `gpt-4.1`.
-5. Click **Create** and wait for indexing to complete.
+   - **Include embedding model**: Leave checked (recommended). Select **Embedding model** `text-embedding-3-large`.
+   - **Chat completions model**: Leave empty (you'll set this on the knowledge base in the next step).
+5. Click **Create**.
+
+![Create Knowledge Source](./images/create-knowledge-source.png)
+
+**Step 2 — Create the knowledge base:**
+
+6. After the knowledge source is created, the **Create a new knowledge base** form opens. Configure it:
+   - **Name**: Enter `machine-diagnostics-kb`.
+   - **Description**: Enter `Knowledge base for manufacturing diagnostics`.
+   - **Chat completions model**: Select `gpt-4.1`.
+   - **Retrieval reasoning effort**: Select **Minimal** (fastest — queries all sources without LLM-driven query planning; suitable for this lab).
+   - **Output mode**: Leave as **Extractive data** (returns relevant chunks from your documents).
+   - **Retrieval instructions**: Leave empty for now (you can add steering instructions later to guide which sources to prioritize).
+   - **Knowledge sources**: You should see `machine-diagnostics-ks` already listed with type **Azure Blob Storage** and status **Creating**.
+7. Click **Save knowledge base** in the top-right.
+
+![Create Knowledge Base](./images/create-knowledge-base.png)
+
+> [!NOTE]
+> Indexing may take 2–5 minutes depending on the number of files and their size. The knowledge source status will change from **Creating** to **Active** when ready. You can navigate away and come back — the indexing continues in the background.
+>
+> A single knowledge base can contain **multiple knowledge sources**. For example, you could later add a SharePoint source for safety procedures or a web source for live vendor documentation — all queried together when the agent retrieves information.
 
 <details>
 <summary>✅ You should see something similar to this</summary>
 
-The Foundry IQ page showing your knowledge base with status **Active**, the knowledge source name, and the connection to your AI Search resource.
+The Create a new knowledge base page showing the name, chat completions model (gpt-4.1), retrieval reasoning effort (Minimal), output mode (Extractive data), and the knowledge source `machine-diagnostics-ks` with type Azure Blob Storage and status Creating.
 
-<!-- TODO: Replace with actual screenshot -->
-![Foundry IQ Knowledge Base](./images/placeholder-foundry-iq-kb.png)
+![Foundry IQ Knowledge Base](./images/foundry-iq-kb.png)
 
 </details>
 
-> [!NOTE]
-> Indexing may take 2–5 minutes depending on the number of files and their size. You'll see the status change from "Creating" to **Active** when ready.
-
 ### Task 3: Connect Knowledge Base to Agent & Test
 
-1. Go back to your `TireAssistant` agent in the Foundry Portal.
-2. First, update the agent's **Instructions** to tell it to use the knowledge base. Replace the existing instructions with:
+1. After saving the knowledge base, you'll see a **Use in an agent** dropdown button at the top of the page (next to **Save**). Click it.
+2. A list of your recent agents appears. Select **TireToolsAgent**.
+
+   ![Use in an agent](./images/use-in-agent.png)
+
+3. This opens the `TireToolsAgent` playground with the knowledge base already connected. You should see it listed under the **Knowledge** section in the left panel.
+4. Update the agent's **Instructions** to tell it to use the knowledge base. Replace the existing instructions with:
 
    ```
    You are a tire manufacturing assistant at Contoso Tires.
 
-   Use the knowledge base tool to answer user questions about machine
-   diagnostics, fault codes, maintenance procedures, and repair times.
-   If the knowledge base doesn't contain the answer, respond with
-   "I don't have that information in the maintenance documentation."
+   ## Retrieval rules
+   - ALWAYS call the knowledge_base_retrieve tool before answering
+     any question about machine diagnostics, fault codes, maintenance
+     procedures, or repair times.
+   - Base your answer ONLY on the content returned by the tool.
+   - If the tool returns no relevant results, respond with:
+     "I don't have that information in the maintenance documentation."
 
-   When you use information from the knowledge base, include citations
-   to the retrieved sources.
+   ## Citation rules
+   - For every fact you include in your answer, add an inline citation
+     referencing the source document name returned by the tool,
+     e.g. [tire_curing_press.md].
+   - At the end of your response, list all cited sources under a
+     "Sources" heading.
 
-   Always be specific about machine types and part numbers when possible.
-   Structure your responses with clear steps.
+   ## Response format
+   - Be specific about machine types, part numbers, and threshold values.
+   - Structure your responses with clear numbered steps when describing
+     procedures.
    ```
 
    > [!TIP]
-   > Explicitly telling the agent to "use the knowledge base tool" increases the chance it will actually call the tool instead of relying on its own training data. See [Optimize agent instructions for knowledge retrieval](https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/foundry-iq-connect?tabs=foundry%2Cpython#optimize-agent-instructions-for-knowledge-retrieval) for more guidance.
+   > Explicitly telling the agent to "use the knowledge base tool" and providing structured citation rules increases the chance it will actually call the tool and surface references. See [Optimize agent instructions for knowledge retrieval](https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/foundry-iq-connect?tabs=foundry%2Cpython#optimize-agent-instructions-for-knowledge-retrieval) for more guidance.
 
-3. In the left-hand configuration panel, find the **Knowledge** section (marked **Preview**) and click **Add**.
-4. From the dropdown, select **Connect to Foundry IQ**.
-5. The **Connect to Foundry IQ** dialog opens:
-   - **Connection**: Your AI Search connection is pre-selected (e.g. `msagthack-aifoundry-...-aisearch`).
-   - **Knowledge base**: Select the knowledge base you just created from the dropdown.
-6. Click **Connect** (or **Add**). The knowledge base now appears under the Knowledge section.
-7. Click **Save** to create a new agent version with the knowledge base connected.
-8. Now test with documentation-grounded questions:
+5. Click **Save** to create a new agent version with the knowledge base connected.
+6. Now test with documentation-grounded questions. Send Prompt 1 below.
+
+> [!IMPORTANT]
+> The first time the agent calls the knowledge base tool, you'll see an **approval prompt** showing the `knowledge_base_retrieve` call with the generated `knowledgeBaseIntents`. Click the **Approve** dropdown and select **Always approve this tool** — this prevents the approval dialog from appearing on every subsequent query.
+>
+> ![Approve knowledge base tool](./images/approve-kb-tool.png)
 
 <details>
 <summary>💬 Sample prompts for Foundry IQ</summary>
@@ -223,7 +265,7 @@ The Foundry IQ page showing your knowledge base with status **Active**, the know
 
 </details>
 
-9. Verify the responses:
+7. Verify the responses:
    - Are **citations** included, showing which source document was used?
    - Do the answers match the content in the wiki markdown files?
    - Try the cross-document query (Prompt 3) — Foundry IQ should pull from multiple documents and combine the information.
@@ -262,13 +304,8 @@ In Task 2 you created a knowledge base through Foundry IQ. Behind the scenes, th
    - **Chat completion model** — the model used for agentic retrieval (query decomposition and reranking).
    - **Output configurations** — settings for how results are returned.
 
-**Step 2 — Browse the indexed content:**
 
-1. Still on the knowledge base detail page, notice the main content area shows the **indexed documents** from your wiki files.
-2. Scroll through the content — you'll see the full structure of each document: titles, operating thresholds, fault types, diagnostics, corrective actions, and estimated repair times.
-3. This confirms all 5 machine wiki files were properly indexed and are searchable.
-
-**Step 3 — Test a query directly:**
+**Step 2 — Test a query directly:**
 
 1. At the bottom of the knowledge base detail page, find the **"Enter your message..."** input box.
 2. Try a query directly against the knowledge base (bypassing the agent):

@@ -8,13 +8,13 @@ In this lab you'll extend your agent with built-in tools — File Search, Code I
 
 **Prerequisites**:
 
-- [Portal Lab 2](../portal-lab-2/README.md) completed (you have a working `TireAssistant` agent)
+- [Portal Lab 2](../portal-lab-2/README.md) completed
 - Access to the pre-provisioned **Storage Account** in the Azure Portal (set up in Challenge 0)
 - Lab data files downloaded to your local machine (see below)
 
 ### Download Lab Files from GitHub
 
-This lab requires several data files. Since you're working directly from the Foundry Portal (not in a codespace), download the files from GitHub to your local machine first.
+This lab requires several data files. Since you're working directly from the Foundry Portal (not in a codespaces), download the files from GitHub to your local machine first.
 
 **Option A — Download individual files:**
 
@@ -34,7 +34,6 @@ This lab requires several data files. Since you're working directly from the Fou
 | File | Used in | Purpose |
 |------|---------|---------|
 | `portal-lab-3/data/contoso-tires-maintenance-manual.pdf` | Task 1 | Maintenance manual for File Search |
-| `portal-lab-3/data/defect-rates.csv` | Task 2 (optional) | Defect data for Code Interpreter |
 
 ## 🎯 Objective
 
@@ -61,21 +60,39 @@ The Foundry Portal offers several built-in tools:
 
 ### Task 1: File Search
 
-In this task you'll upload a maintenance manual PDF and let the agent search it to answer questions.
+In this task you'll create a fresh agent and upload a maintenance manual PDF so the agent can search it to answer questions.
 
-1. Open your `TireAssistant` agent in the Foundry Portal (or create a new agent for this exercise).
-2. In the agent's left-hand configuration panel, find the **Tools** section and click the **Upload files** button.
-3. The **Attach files** dialog opens:
+1. In the Foundry Portal, navigate to **Build** → **Agents** and click **Create agent**.
+2. Name the agent `TireToolsAgent` and click **Create**.
+3. Configure it:
+   - **Model**: Select `gpt-4.1` from the dropdown.
+   - **Instructions**: Paste the following:
+
+     ```
+     You are a tire manufacturing assistant at Contoso Tires. You help
+     technicians troubleshoot machine issues, recommend maintenance procedures,
+     and answer questions about tire building, curing, and mixing processes.
+     Always be specific about machine types and part numbers when possible.
+     ```
+
+4. Notice that **Web Search** is added as a tool by default. For this task, **remove it** — click the three-dot menu (⋮) next to **Web search** and select **Remove**. We want the agent to rely solely on the uploaded document, not the web. You'll re-enable Web Search later in Task 3.
+5. Click **Save**.
+6. In the agent's left-hand configuration panel, find the **Tools** section and click the **Upload files** button.
+7. The **Attach files** dialog opens:
    - **Index option**: Leave as **Create a new index** (default).
    - **Vector index name**: A name is auto-generated for you (e.g. `index_honest_floor_8wyjngstpk`). You can keep the generated name or rename it to something meaningful like `contoso-tires-maintenance`.
    - Click **browse for files** (or drag and drop) and select the file [`portal-lab-3/data/contoso-tires-maintenance-manual.pdf`](./data/contoso-tires-maintenance-manual.pdf) from this repository.
-4. The file appears in a table showing **Name**, **Size** (~120 KB), and **Status** (Uploading → Uploaded).
-5. Click **Attach** to confirm.
+8. The file appears in a table showing **Name**, **Size** (~120 KB), and **Status** (Uploading → Uploaded).
+9. Click **Attach** to confirm.
 
-> [!NOTE]
-> Behind the scenes, this creates a vector index from your PDF and enables the **File Search** tool on the agent. The indexing may take a moment to complete.
+> [!WARNING]
+> After attaching the file, the portal creates a vector index in the background. This can take **several minutes**. You may see a yellow warning banner saying *"Tools not configured. The agent might not run as expected."* and the **Save** button may not work until the index is ready.
+>
+> **If this happens**: Navigate away from the agent (e.g. click **Models** in the left navigation), wait 2–3 minutes, then return to your `TireToolsAgent`. The **File search** tool should now show with your index listed. Click **Save** to confirm the configuration.
+>
+> ![Tools not configured warning](./images/tools-not-configured.png)
 
-6. Once the file is attached and indexed, ask the agent these questions:
+10. Once the file is attached and indexed, ask the agent these questions:
 
 <details>
 <summary>💬 Sample prompts for File Search</summary>
@@ -91,14 +108,14 @@ In this task you'll upload a maintenance manual PDF and let the agent search it 
 
 </details>
 
-7. Observe the responses:
+11. Observe the responses:
    - Does the agent cite the uploaded document?
    - Are the answers grounded in the document content (not general knowledge)?
    - Can you see which section of the document the answer came from?
 
-8. **Inspect the response metadata and traces.** After the agent responds, look at the bottom of each chat message — you'll see a metadata bar showing the model used (e.g. `gpt-4.1`), response time, token count, and quality/safety scores (e.g. **AI Quality: 100%**, **Safety: 100%**).
+12. **Inspect the response metadata and traces.** After the agent responds, look at the bottom of each chat message — you'll see a metadata bar showing the model used (e.g. `gpt-4.1`), response time, token count, and quality/safety scores (e.g. **AI Quality: 100%**, **Safety: 100%**).
 
-9. Click the **Logs** button at the bottom of a response (or switch to the **Traces** tab at the top of the agent page) to open the trace view:
+13. Click the **Logs** button at the bottom of a response (or switch to the **Traces** tab at the top of the agent page) to open the trace view:
    - You'll see the full **Conversation** with status (**Completed**), total duration, and token count.
    - Expand a response to see individual steps — notice the **file_search** tool calls followed by the **message** output. This confirms the agent actually searched the uploaded PDF before answering.
    - Click on a specific response row to open the **Input + Output** panel on the right:
@@ -150,8 +167,6 @@ A grouped bar chart with 4 machines × 3 months. Bars above 3.0% are red, bars a
 
 </details>
 
-> [!TIP]
-> **Optional**: Instead of embedding data in the prompt, try uploading the CSV file at [`portal-lab-3/data/defect-rates.csv`](./data/defect-rates.csv). Ask the agent: "Create a bar chart from this CSV file showing defect rates by machine and month."
 
 ### Task 3: Web Search (Before & After)
 
@@ -159,7 +174,7 @@ This task demonstrates the value of web search by showing the same question with
 
 **Without web search:**
 
-1. Make sure **Web Search** is **not** enabled on the agent.
+1. Make sure **Web Search** is **not** enabled on `TireToolsAgent` (you removed it in Task 1).
 2. Ask the agent:
    > "Were there any manufacturing related announcements at Microsoft Ignite 2025?"
 3. Observe the response — the agent will either:
