@@ -88,9 +88,9 @@ In this task you'll create a fresh agent and upload a maintenance manual PDF so 
 > [!WARNING]
 > After attaching the file, the portal creates a vector index in the background. This can take **several minutes**. You may see a yellow warning banner saying *"Tools not configured. The agent might not run as expected."* and the **Save** button may not work until the index is ready.
 >
-> **If this happens**: Navigate away from the agent (e.g. click **Models** in the left navigation), wait 2–3 minutes, then return to your `TireToolsAgent`. The **File search** tool should now show with your index listed. Click **Save** to confirm the configuration.
+> **If this happens**: Navigate away from the agent (e.g. click **Models** in the left navigation), wait 2–3 minutes, then return to your `TireToolsAgent` and select **Add** **File Tool** under **Tools** again. The **File search** tool should now show with your index listed. Click **Save** to confirm the configuration.
 >
-> ![Tools not configured warning](./images/tools-not-configured.png)
+
 
 10. Once the file is attached and indexed, ask the agent these questions:
 

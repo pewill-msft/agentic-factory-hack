@@ -138,7 +138,7 @@ After deploying, the Foundry Portal opens the model playground directly — show
 
 ![Model Playground](./images/playground-after-deploy.png)
 
-</detail
+</details>
 
 ### Task 5: Test in the Playground
 
