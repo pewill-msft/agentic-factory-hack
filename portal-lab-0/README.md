@@ -6,7 +6,6 @@ Welcome to the first portal lab! This short exercise ensures you have access to 
 
 **Prerequisites**:
 
-- [Challenge 0](../challenge-0/README.md) has been completed (environment provisioned and data seeded)
 - An Azure account with access to the pre-created resource group
 
 ## 🎯 Objective
@@ -21,7 +20,7 @@ The goals for this lab are:
 
 The coding challenges (Challenge 0–4) use a code-first approach with Python and .NET. These **Portal Labs** offer a parallel no-code track where you explore the same Contoso Tires manufacturing scenario entirely through the **Foundry Portal** at [ai.azure.com](https://ai.azure.com).
 
-The environment provisioned in Challenge 0 includes resources you'll interact with across both tracks:
+The environment provisioned includes resources you'll interact with across both tracks:
 
 | Resource | Purpose in Portal Labs |
 |----------|----------------------|
@@ -51,30 +50,30 @@ The environment provisioned in Challenge 0 includes resources you'll interact wi
 <details>
 <summary>✅ You should see something similar to this</summary>
 
-A resource group containing 8–12 resources. The exact count may vary depending on your deployment region, but the key resources listed above should all be present.
+A resource group containing 12 resources. 
 
-<!-- TODO: Replace with actual screenshot -->
-![Azure Resource Group](./images/placeholder-azure-rg.png)
+![Azure Resource Group](./images/azure-resources.png)
 
 </details>
 
 ### Task 2: Access the Foundry Portal
 
 1. Open [ai.azure.com](https://ai.azure.com) in your browser and sign in with the same Azure account.
-2. You should see the **Foundry Portal** home page. Take a moment to orient yourself to the left navigation:
-   - **Models** — Model catalog, benchmarks, and comparisons
-   - **Tools** — Tool catalog and solution templates
-   - **Build** — Agents, playgrounds, knowledge bases, and deployments
-3. Select the pre-created **project** (it should appear under your recent projects, or use the project selector at the top).
-4. Confirm the project opens without permission errors.
+2. Ensure that the **New Foundry** portal experience is enabled — look for the **New Foundry** toggle in the upper-right corner and make sure it is turned **on**.
+3. You should land on the **Foundry Portal** welcome page. Take a moment to orient yourself:
+   - **Top navigation bar** — **Home**, **Discover**, **Build**, **Operate**, **Docs**
+   - **Welcome banner** — Shows your name and a **Start building** button
+   - **Project credentials** — Displays your **Project API key**, **Project endpoint**, and **Azure OpenAI endpoint** 
+   - **New arrivals** — Highlights newly available models and deployment options
+   - **Coding quick start** — Expandable section with getting-started guidance
+4. Verify that your pre-created **project** is visible on the welcome page — you should see its credentials (API key, endpoint) displayed. If no project appears, ask your coach for help.
 
 <details>
 <summary>✅ You should see something similar to this</summary>
 
-The Foundry Portal project page showing the project name, the left navigation pane, and no error banners.
+The Foundry Portal welcome page showing your name, the Start building button, project credentials, and the top navigation bar with Home, Discover, Build, Operate, and Docs.
 
-<!-- TODO: Replace with actual screenshot -->
-![Foundry Portal Project](./images/placeholder-foundry-project.png)
+![Foundry Portal Welcome Page](./images/foundry-welcome-page.png)
 
 </details>
 
@@ -83,7 +82,7 @@ The Foundry Portal project page showing the project name, the left navigation pa
 
 ### Task 3: Confirm Model Deployments
 
-1. In the Foundry Portal, navigate to **Manage** → **Models + endpoints** (or **Deployments**).
+1. In the Foundry Portal, click **Operate** in the top navigation bar, then select **Assets** → **Models** in the left sidebar.
 2. Confirm you see three pre-deployed models:
 
 | Model | Type | Expected Status |
@@ -97,10 +96,9 @@ The Foundry Portal project page showing the project name, the left navigation pa
 <details>
 <summary>✅ You should see something similar to this</summary>
 
-A table listing three model deployments, all showing status "Succeeded" with provisioned throughput displayed.
+The Assets page under Operate showing three model deployments, all with state "Succeeded".
 
-<!-- TODO: Replace with actual screenshot -->
-![Model Deployments](./images/placeholder-model-deployments.png)
+![Model Deployments](./images/model-deployments.png)
 
 </details>
 
@@ -109,7 +107,7 @@ A table listing three model deployments, all showing status "Succeeded" with pro
 <details>
 <summary>I can't find the resource group in the Azure portal</summary>
 
-- Make sure you're signed in with the correct Azure account (the same one used for Challenge 0).
+- Make sure you're signed in with the correct Azure account.
 - Try searching for the resource group name in the top search bar.
 - Check that your subscription filter (top-level filter bar) is not hiding the subscription.
 
@@ -123,13 +121,6 @@ A table listing three model deployments, all showing status "Succeeded" with pro
 
 </details>
 
-<details>
-<summary>I only see 2 models instead of 3</summary>
-
-- The deployment may still be provisioning. Wait 2–3 minutes and refresh the page.
-- If a model is missing entirely, it may not be available in your deployment region. Ask your coach for guidance.
-
-</details>
 
 ## 🧠 Conclusion
 

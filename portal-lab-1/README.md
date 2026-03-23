@@ -23,7 +23,7 @@ The goals for this lab are:
 
 The Foundry Portal provides a curated **model catalog** with hundreds of models from Microsoft, OpenAI, Meta, Mistral, and other providers. Each model has a **model card** with documentation, benchmarks, and deployment options.
 
-You already have three models deployed from Challenge 0. In this lab you'll explore what's available, deploy a fourth model, and learn to test models in the **playground** before integrating them into agents or applications.
+You already have three models deployed from the initial setup. In this lab you'll explore what's available, deploy a fourth model, and learn to test models in the **playground** before integrating them into agents or applications.
 
 ### Key concepts
 
@@ -52,7 +52,7 @@ Your project already has **gpt-4.1** (flagship standard) and **gpt-4o-mini** (co
 
 ### Task 1: Browse the Model Catalog
 
-1. In the Foundry Portal, navigate to **Models** in the left navigation.
+1. In the Foundry Portal, click **Discover** in the top navigation bar, then select **Models**.
 2. You'll see the full model catalog (11,000+ models). Explore the available **filters** on the left:
    - **Collections**: Direct from Azure, Foundry Labs, Hugging Face, Fireworks on Foundry
    - **Capabilities**: Agent supported, Fine-tuning, Reasoning, Streaming, Tool calling
@@ -126,8 +126,7 @@ You'll deploy **gpt-5-mini** — a reasoning model that "thinks before it answer
    - **Deployment type**: Global Standard (pay per API call with the highest rate limits).
    - **Tokens per Minute Rate Limit**: Adjust the slider or leave the default value.
    - **Guardrails**: Leave as `DefaultV2`.
-5. Click **Deploy** and wait for provisioning to complete.
-6. Once the status shows **Succeeded**, note the deployment name — you'll use it in the playground.
+5. Click **Deploy**. You'll be taken directly to the **Playground** for the newly deployed model.
 
 > [!TIP]
 > For this lab, **Default settings** is perfectly fine. We use Custom settings here so you can see what's configurable. In production, you'd adjust rate limits and guardrails based on your workload.
@@ -135,19 +134,15 @@ You'll deploy **gpt-5-mini** — a reasoning model that "thinks before it answer
 <details>
 <summary>✅ You should see something similar to this</summary>
 
-The deployment page shows your new model with status "Succeeded", along with the endpoint URL and rate limits.
+After deploying, the Foundry Portal opens the model playground directly — showing the Instructions panel on the left, Tools, Knowledge, and Memory sections, and the Chat panel on the right with "What do you want to chat about?"
 
-<!-- TODO: Replace with actual screenshot -->
-![Model Deployment](./images/placeholder-model-deployment.png)
+![Model Playground](./images/playground-after-deploy.png)
 
-</details>
-
-> [!TIP]
-> Deployment typically takes 1–3 minutes. If it takes longer, refresh the page. If it fails due to quota, ask your coach about region capacity.
+</detail
 
 ### Task 5: Test in the Playground
 
-1. After deployment completes you're already in the playground. If you navigated away, go to **Models** in the left navigation → click your deployment in the list (or click the model link) → **Open in playground**.
+1. You should already be in the playground after deploying in Task 4. If you navigated away, go to **Build** → **Models** in the left navigation → click your deployment → select the **Playground** tab.
 2. In the **Instructions** box (left panel), enter:
 
    ```
@@ -159,6 +154,11 @@ The deployment page shows your new model with status "Succeeded", along with the
 
 > [!IMPORTANT]
 > At this point the model has **no grounding data or tools** — it can only answer from its pre-trained knowledge. Responses may be generic or outdated because the model doesn't have access to Contoso Tires' actual machines, part numbers, or maintenance history. In **Lab 2** you'll create agents, and in **Lab 3** you'll connect tools and knowledge bases so the model can reference your real data.
+
+> [!TIP]
+> Reasoning models like gpt-5-mini default to **high** reasoning effort, which can make responses take up to 2 minutes. Before testing the prompts below, open the **Parameters** panel (click the sliders icon next to the model selector) and set **Reasoning Effort** to **low**. This gives much faster responses while still being good enough for these exercises. You'll experiment with different effort levels later in this task.
+>
+> ![Set Reasoning Effort to low](./images/reasoning-effort-low.png)
 
 3. In the **Chat** tab on the right, try each prompt below. Each one demonstrates a different aspect of working with a plain LLM.
 
@@ -199,7 +199,7 @@ The deployment page shows your new model with status "Succeeded", along with the
 
 - **Reasoning Effort** controls how much "thinking" the model does before answering. For quick factual lookups, **minimal** or **low** is fast and sufficient. For complex multi-step analysis, **high** produces more thorough responses but takes longer.
 - **Max Completion Tokens** is a hard limit on response length. The model stops abruptly when it hits the cap — useful for controlling costs but can cut off important information.
-- These are the parameters available for reasoning models like gpt-5-mini. Other model types (e.g., gpt-4.1) may expose different parameters like Temperature and Top P.
+- These are the parameters available for reasoning models like gpt-5-mini.
 
 </details>
 
@@ -212,8 +212,8 @@ The deployment page shows your new model with status "Succeeded", along with the
 
 1. In the playground, click the **Compare models** button in the top-right corner.
 2. Select your newly deployed **gpt-5-mini** on one side and **gpt-4o-mini** on the other.
-3. Set the same system prompt on both sides.
-4. Send the same question to both models simultaneously:
+3. Set the same system prompt on both sides using the **Setup** tab.
+4. Send the same question in the **Chat** tab to both models simultaneously:
    > "Create a step-by-step root cause analysis procedure for inconsistent cure times on a tire curing press."
 5. Compare the responses: depth, structure, and specificity.
 
@@ -280,6 +280,6 @@ You learned to:
 - Did the model give specific Contoso Tires machine or part details, or were responses generic? Why?
 - What would the model need (data, tools, context) to give accurate, company-specific answers?
 
-In the upcoming labs you'll address these gaps — **Lab 2** introduces agents that can maintain conversation context, and **Lab 3** connects tools and knowledge bases so the model can reference your actual maintenance data.
+In the upcoming labs you'll address these gaps — **Lab 2** introduces agents that can maintain conversation context, and **Lab 3** and **Lab 4** connects tools and knowledge bases so the model can reference your actual maintenance data.
 
 **Next**: [Portal Lab 2 — Agents](../portal-lab-2/README.md)

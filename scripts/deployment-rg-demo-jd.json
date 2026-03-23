@@ -1,0 +1,963 @@
+{
+  "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Resources/deployments/hack-deployment-1774277981",
+  "location": null,
+  "name": "hack-deployment-1774277981",
+  "properties": {
+    "correlationId": "35cca37c-d05d-4fc0-afe2-95436db46232",
+    "debugSetting": null,
+    "dependencies": [
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.OperationalInsights/workspaces/msagthack-loganalytics-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-loganalytics-3yeaheufhagy6",
+            "resourceType": "Microsoft.OperationalInsights/workspaces"
+          },
+          {
+            "apiVersion": "2021-06-01",
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.OperationalInsights/workspaces/msagthack-loganalytics-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-loganalytics-3yeaheufhagy6",
+            "resourceType": "Microsoft.OperationalInsights/workspaces"
+          },
+          {
+            "actionName": "listKeys",
+            "apiVersion": "2021-06-01",
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.OperationalInsights/workspaces/msagthack-loganalytics-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-loganalytics-3yeaheufhagy6",
+            "resourceType": "Microsoft.OperationalInsights/workspaces"
+          }
+        ],
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.App/managedEnvironments/msagthack-caenv-3yeaheufhagy6",
+        "resourceGroup": "rg-demo-jd",
+        "resourceName": "msagthack-caenv-3yeaheufhagy6",
+        "resourceType": "Microsoft.App/managedEnvironments"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.App/managedEnvironments/msagthack-caenv-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-caenv-3yeaheufhagy6",
+            "resourceType": "Microsoft.App/managedEnvironments"
+          },
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.ContainerRegistry/registries/msagthackcr3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthackcr3yeaheufhagy6",
+            "resourceType": "Microsoft.ContainerRegistry/registries"
+          },
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.DocumentDB/databaseAccounts/msagthack-cosmos-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-cosmos-3yeaheufhagy6",
+            "resourceType": "Microsoft.DocumentDB/databaseAccounts"
+          },
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-aifoundry-3yeaheufhagy6",
+            "resourceType": "Microsoft.CognitiveServices/accounts"
+          },
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Search/searchServices/msagthack-search-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-search-3yeaheufhagy6",
+            "resourceType": "Microsoft.Search/searchServices"
+          },
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-contentsafety-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-contentsafety-3yeaheufhagy6",
+            "resourceType": "Microsoft.CognitiveServices/accounts"
+          }
+        ],
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.App/containerApps/msagthack-ca-3yeaheufhagy6",
+        "resourceGroup": "rg-demo-jd",
+        "resourceName": "msagthack-ca-3yeaheufhagy6",
+        "resourceType": "Microsoft.App/containerApps"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.OperationalInsights/workspaces/msagthack-loganalytics-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-loganalytics-3yeaheufhagy6",
+            "resourceType": "Microsoft.OperationalInsights/workspaces"
+          }
+        ],
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Insights/components/msagthack-appinsights-3yeaheufhagy6",
+        "resourceGroup": "rg-demo-jd",
+        "resourceName": "msagthack-appinsights-3yeaheufhagy6",
+        "resourceType": "Microsoft.Insights/components"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-aifoundry-3yeaheufhagy6",
+            "resourceType": "Microsoft.CognitiveServices/accounts"
+          },
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Insights/components/msagthack-appinsights-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-appinsights-3yeaheufhagy6",
+            "resourceType": "Microsoft.Insights/components"
+          }
+        ],
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/projects/msagthack-aiproject-3yeaheufhagy6",
+        "resourceGroup": "rg-demo-jd",
+        "resourceName": "msagthack-aifoundry-3yeaheufhagy6/msagthack-aiproject-3yeaheufhagy6",
+        "resourceType": "Microsoft.CognitiveServices/accounts/projects"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/projects/msagthack-aiproject-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-aifoundry-3yeaheufhagy6/msagthack-aiproject-3yeaheufhagy6",
+            "resourceType": "Microsoft.CognitiveServices/accounts/projects"
+          },
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Insights/components/msagthack-appinsights-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-appinsights-3yeaheufhagy6",
+            "resourceType": "Microsoft.Insights/components"
+          },
+          {
+            "apiVersion": "2020-02-02",
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Insights/components/msagthack-appinsights-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-appinsights-3yeaheufhagy6",
+            "resourceType": "Microsoft.Insights/components"
+          }
+        ],
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/projects/msagthack-aiproject-3yeaheufhagy6/connections/msagthack-appinsights-3yeaheufhagy6",
+        "resourceGroup": "rg-demo-jd",
+        "resourceName": "msagthack-aifoundry-3yeaheufhagy6/msagthack-aiproject-3yeaheufhagy6/msagthack-appinsights-3yeaheufhagy6",
+        "resourceType": "Microsoft.CognitiveServices/accounts/projects/connections"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-aifoundry-3yeaheufhagy6",
+            "resourceType": "Microsoft.CognitiveServices/accounts"
+          }
+        ],
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/deployments/gpt-4o-mini",
+        "resourceGroup": "rg-demo-jd",
+        "resourceName": "msagthack-aifoundry-3yeaheufhagy6/gpt-4o-mini",
+        "resourceType": "Microsoft.CognitiveServices/accounts/deployments"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-aifoundry-3yeaheufhagy6",
+            "resourceType": "Microsoft.CognitiveServices/accounts"
+          },
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/deployments/gpt-4o-mini",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-aifoundry-3yeaheufhagy6/gpt-4o-mini",
+            "resourceType": "Microsoft.CognitiveServices/accounts/deployments"
+          }
+        ],
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/deployments/gpt-4.1",
+        "resourceGroup": "rg-demo-jd",
+        "resourceName": "msagthack-aifoundry-3yeaheufhagy6/gpt-4.1",
+        "resourceType": "Microsoft.CognitiveServices/accounts/deployments"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-aifoundry-3yeaheufhagy6",
+            "resourceType": "Microsoft.CognitiveServices/accounts"
+          },
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/deployments/gpt-4.1",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-aifoundry-3yeaheufhagy6/gpt-4.1",
+            "resourceType": "Microsoft.CognitiveServices/accounts/deployments"
+          }
+        ],
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/deployments/text-embedding-3-large",
+        "resourceGroup": "rg-demo-jd",
+        "resourceName": "msagthack-aifoundry-3yeaheufhagy6/text-embedding-3-large",
+        "resourceType": "Microsoft.CognitiveServices/accounts/deployments"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-aifoundry-3yeaheufhagy6",
+            "resourceType": "Microsoft.CognitiveServices/accounts"
+          },
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Search/searchServices/msagthack-search-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-search-3yeaheufhagy6",
+            "resourceType": "Microsoft.Search/searchServices"
+          },
+          {
+            "apiVersion": "2023-11-01",
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Search/searchServices/msagthack-search-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-search-3yeaheufhagy6",
+            "resourceType": "Microsoft.Search/searchServices"
+          }
+        ],
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/providers/Microsoft.Authorization/roleAssignments/e772e4bf-a768-51cc-a9d8-0bbd6124bfa8",
+        "resourceGroup": "rg-demo-jd",
+        "resourceName": "e772e4bf-a768-51cc-a9d8-0bbd6124bfa8",
+        "resourceType": "Microsoft.Authorization/roleAssignments"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-aifoundry-3yeaheufhagy6",
+            "resourceType": "Microsoft.CognitiveServices/accounts"
+          },
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Search/searchServices/msagthack-search-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-search-3yeaheufhagy6",
+            "resourceType": "Microsoft.Search/searchServices"
+          },
+          {
+            "apiVersion": "2025-04-01-preview",
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-aifoundry-3yeaheufhagy6",
+            "resourceType": "Microsoft.CognitiveServices/accounts"
+          }
+        ],
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Search/searchServices/msagthack-search-3yeaheufhagy6/providers/Microsoft.Authorization/roleAssignments/b5afe7b2-e6fe-5b37-a805-68deb016d2b9",
+        "resourceGroup": "rg-demo-jd",
+        "resourceName": "b5afe7b2-e6fe-5b37-a805-68deb016d2b9",
+        "resourceType": "Microsoft.Authorization/roleAssignments"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/projects/msagthack-aiproject-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-aifoundry-3yeaheufhagy6/msagthack-aiproject-3yeaheufhagy6",
+            "resourceType": "Microsoft.CognitiveServices/accounts/projects"
+          },
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Search/searchServices/msagthack-search-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-search-3yeaheufhagy6",
+            "resourceType": "Microsoft.Search/searchServices"
+          },
+          {
+            "apiVersion": "2025-04-01-preview",
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/projects/msagthack-aiproject-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-aifoundry-3yeaheufhagy6/msagthack-aiproject-3yeaheufhagy6",
+            "resourceType": "Microsoft.CognitiveServices/accounts/projects"
+          }
+        ],
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Search/searchServices/msagthack-search-3yeaheufhagy6/providers/Microsoft.Authorization/roleAssignments/790e372a-cf5e-55b3-b176-f0d50cc87220",
+        "resourceGroup": "rg-demo-jd",
+        "resourceName": "790e372a-cf5e-55b3-b176-f0d50cc87220",
+        "resourceType": "Microsoft.Authorization/roleAssignments"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/projects/msagthack-aiproject-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-aifoundry-3yeaheufhagy6/msagthack-aiproject-3yeaheufhagy6",
+            "resourceType": "Microsoft.CognitiveServices/accounts/projects"
+          },
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Search/searchServices/msagthack-search-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-search-3yeaheufhagy6",
+            "resourceType": "Microsoft.Search/searchServices"
+          },
+          {
+            "apiVersion": "2025-04-01-preview",
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/projects/msagthack-aiproject-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-aifoundry-3yeaheufhagy6/msagthack-aiproject-3yeaheufhagy6",
+            "resourceType": "Microsoft.CognitiveServices/accounts/projects"
+          }
+        ],
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Search/searchServices/msagthack-search-3yeaheufhagy6/providers/Microsoft.Authorization/roleAssignments/e7e3a120-838e-59c7-9462-e859e39ad952",
+        "resourceGroup": "rg-demo-jd",
+        "resourceName": "e7e3a120-838e-59c7-9462-e859e39ad952",
+        "resourceType": "Microsoft.Authorization/roleAssignments"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-aifoundry-3yeaheufhagy6",
+            "resourceType": "Microsoft.CognitiveServices/accounts"
+          },
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Search/searchServices/msagthack-search-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-search-3yeaheufhagy6",
+            "resourceType": "Microsoft.Search/searchServices"
+          },
+          {
+            "actionName": "listAdminKeys",
+            "apiVersion": "2023-11-01",
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Search/searchServices/msagthack-search-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-search-3yeaheufhagy6",
+            "resourceType": "Microsoft.Search/searchServices"
+          }
+        ],
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/connections/msagthack-aifoundry-3yeaheufhagy6-aisearch",
+        "resourceGroup": "rg-demo-jd",
+        "resourceName": "msagthack-aifoundry-3yeaheufhagy6/msagthack-aifoundry-3yeaheufhagy6-aisearch",
+        "resourceType": "Microsoft.CognitiveServices/accounts/connections"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.DocumentDB/databaseAccounts/msagthack-cosmos-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-cosmos-3yeaheufhagy6",
+            "resourceType": "Microsoft.DocumentDB/databaseAccounts"
+          },
+          {
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.ApiManagement/service/msagthack-apim-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-apim-3yeaheufhagy6",
+            "resourceType": "Microsoft.ApiManagement/service"
+          },
+          {
+            "apiVersion": "2023-03-01-preview",
+            "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.ApiManagement/service/msagthack-apim-3yeaheufhagy6",
+            "resourceGroup": "rg-demo-jd",
+            "resourceName": "msagthack-apim-3yeaheufhagy6",
+            "resourceType": "Microsoft.ApiManagement/service"
+          }
+        ],
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.DocumentDB/databaseAccounts/msagthack-cosmos-3yeaheufhagy6/sqlRoleAssignments/e8f720db-9e9b-51bd-aaac-9452ac7f5467",
+        "resourceGroup": "rg-demo-jd",
+        "resourceName": "msagthack-cosmos-3yeaheufhagy6/e8f720db-9e9b-51bd-aaac-9452ac7f5467",
+        "resourceType": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments"
+      }
+    ],
+    "diagnostics": null,
+    "duration": "PT6M38.8820342S",
+    "error": null,
+    "extensions": [],
+    "mode": "Incremental",
+    "onErrorDeployment": null,
+    "outputResources": [
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.ApiManagement/service/msagthack-apim-3yeaheufhagy6",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.ApiManagement/service"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.App/containerApps/msagthack-ca-3yeaheufhagy6",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.App/containerApps"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.App/managedEnvironments/msagthack-caenv-3yeaheufhagy6",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.App/managedEnvironments"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.CognitiveServices/accounts"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/connections/msagthack-aifoundry-3yeaheufhagy6-aisearch",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.CognitiveServices/accounts/connections"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/deployments/gpt-4.1",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.CognitiveServices/accounts/deployments"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/deployments/gpt-4o-mini",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.CognitiveServices/accounts/deployments"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/deployments/text-embedding-3-large",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.CognitiveServices/accounts/deployments"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/projects/msagthack-aiproject-3yeaheufhagy6",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.CognitiveServices/accounts/projects"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/projects/msagthack-aiproject-3yeaheufhagy6/connections/msagthack-appinsights-3yeaheufhagy6",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.CognitiveServices/accounts/projects/connections"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/providers/Microsoft.Authorization/roleAssignments/e772e4bf-a768-51cc-a9d8-0bbd6124bfa8",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.Authorization/roleAssignments"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-contentsafety-3yeaheufhagy6",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.CognitiveServices/accounts"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.ContainerRegistry/registries/msagthackcr3yeaheufhagy6",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.ContainerRegistry/registries"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.DocumentDB/databaseAccounts/msagthack-cosmos-3yeaheufhagy6",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.DocumentDB/databaseAccounts"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.DocumentDB/databaseAccounts/msagthack-cosmos-3yeaheufhagy6/sqlRoleAssignments/e8f720db-9e9b-51bd-aaac-9452ac7f5467",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Insights/components/msagthack-appinsights-3yeaheufhagy6",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.Insights/components"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.OperationalInsights/workspaces/msagthack-loganalytics-3yeaheufhagy6",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.OperationalInsights/workspaces"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Search/searchServices/msagthack-search-3yeaheufhagy6",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.Search/searchServices"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Search/searchServices/msagthack-search-3yeaheufhagy6/providers/Microsoft.Authorization/roleAssignments/790e372a-cf5e-55b3-b176-f0d50cc87220",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.Authorization/roleAssignments"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Search/searchServices/msagthack-search-3yeaheufhagy6/providers/Microsoft.Authorization/roleAssignments/b5afe7b2-e6fe-5b37-a805-68deb016d2b9",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.Authorization/roleAssignments"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Search/searchServices/msagthack-search-3yeaheufhagy6/providers/Microsoft.Authorization/roleAssignments/e7e3a120-838e-59c7-9462-e859e39ad952",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.Authorization/roleAssignments"
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.Storage/storageAccounts/msagthacksa3yeaheufhagy6",
+        "identifiers": null,
+        "resourceGroup": "rg-demo-jd",
+        "resourceType": "Microsoft.Storage/storageAccounts"
+      }
+    ],
+    "outputs": {
+      "acrName": {
+        "type": "String",
+        "value": "msagthackcr3yeaheufhagy6"
+      },
+      "acrPassword": {
+        "type": "SecureString"
+      },
+      "acrUsername": {
+        "type": "String",
+        "value": "msagthackcr3yeaheufhagy6"
+      },
+      "aiFoundryHubEndpoint": {
+        "type": "String",
+        "value": "https://ml.azure.com/home?wsid=/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6"
+      },
+      "aiFoundryHubName": {
+        "type": "String",
+        "value": "msagthack-aifoundry-3yeaheufhagy6"
+      },
+      "aiFoundryProjectEndpoint": {
+        "type": "String",
+        "value": "https://ai.azure.com/build/overview?wsid=/subscriptions/b2f949ca-aba6-4dce-a438-548eeedf8c8f/resourceGroups/rg-demo-jd/providers/Microsoft.CognitiveServices/accounts/msagthack-aifoundry-3yeaheufhagy6/projects/msagthack-aiproject-3yeaheufhagy6"
+      },
+      "aiFoundryProjectName": {
+        "type": "String",
+        "value": "msagthack-aiproject-3yeaheufhagy6"
+      },
+      "applicationInsightsName": {
+        "type": "String",
+        "value": "msagthack-appinsights-3yeaheufhagy6"
+      },
+      "containerAppEnvironmentName": {
+        "type": "String",
+        "value": "msagthack-caenv-3yeaheufhagy6"
+      },
+      "containerAppName": {
+        "type": "String",
+        "value": "msagthack-ca-3yeaheufhagy6"
+      },
+      "containerAppUrl": {
+        "type": "String",
+        "value": "https://msagthack-ca-3yeaheufhagy6.lemonisland-16b6cec7.swedencentral.azurecontainerapps.io"
+      },
+      "containerRegistryName": {
+        "type": "String",
+        "value": "msagthackcr3yeaheufhagy6"
+      },
+      "contentSafetyEndpoint": {
+        "type": "String",
+        "value": "https://msagthack-contentsafety-3yeaheufhagy6.cognitiveservices.azure.com/"
+      },
+      "contentSafetyName": {
+        "type": "String",
+        "value": "msagthack-contentsafety-3yeaheufhagy6"
+      },
+      "cosmosDbAccountName": {
+        "type": "String",
+        "value": "msagthack-cosmos-3yeaheufhagy6"
+      },
+      "cosmosDbEndpoint": {
+        "type": "String",
+        "value": "https://msagthack-cosmos-3yeaheufhagy6.documents.azure.com:443/"
+      },
+      "logAnalyticsWorkspaceName": {
+        "type": "String",
+        "value": "msagthack-loganalytics-3yeaheufhagy6"
+      },
+      "searchServiceEndpoint": {
+        "type": "String",
+        "value": "https://msagthack-search-3yeaheufhagy6.search.windows.net/"
+      },
+      "searchServiceName": {
+        "type": "String",
+        "value": "msagthack-search-3yeaheufhagy6"
+      },
+      "storageAccountName": {
+        "type": "String",
+        "value": "msagthacksa3yeaheufhagy6"
+      }
+    },
+    "parameters": {
+      "location": {
+        "type": "String",
+        "value": "swedencentral"
+      },
+      "searchServiceSku": {
+        "type": "String",
+        "value": "basic"
+      }
+    },
+    "parametersLink": null,
+    "providers": [
+      {
+        "id": null,
+        "namespace": "Microsoft.ApiManagement",
+        "providerAuthorizationConsentState": null,
+        "registrationPolicy": null,
+        "registrationState": null,
+        "resourceTypes": [
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              "swedencentral"
+            ],
+            "properties": null,
+            "resourceType": "service",
+            "zoneMappings": null
+          }
+        ]
+      },
+      {
+        "id": null,
+        "namespace": "Microsoft.Storage",
+        "providerAuthorizationConsentState": null,
+        "registrationPolicy": null,
+        "registrationState": null,
+        "resourceTypes": [
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              "swedencentral"
+            ],
+            "properties": null,
+            "resourceType": "storageAccounts",
+            "zoneMappings": null
+          }
+        ]
+      },
+      {
+        "id": null,
+        "namespace": "Microsoft.OperationalInsights",
+        "providerAuthorizationConsentState": null,
+        "registrationPolicy": null,
+        "registrationState": null,
+        "resourceTypes": [
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              "swedencentral"
+            ],
+            "properties": null,
+            "resourceType": "workspaces",
+            "zoneMappings": null
+          }
+        ]
+      },
+      {
+        "id": null,
+        "namespace": "Microsoft.DocumentDB",
+        "providerAuthorizationConsentState": null,
+        "registrationPolicy": null,
+        "registrationState": null,
+        "resourceTypes": [
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              "swedencentral"
+            ],
+            "properties": null,
+            "resourceType": "databaseAccounts",
+            "zoneMappings": null
+          },
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              null
+            ],
+            "properties": null,
+            "resourceType": "databaseAccounts/sqlRoleAssignments",
+            "zoneMappings": null
+          }
+        ]
+      },
+      {
+        "id": null,
+        "namespace": "Microsoft.Search",
+        "providerAuthorizationConsentState": null,
+        "registrationPolicy": null,
+        "registrationState": null,
+        "resourceTypes": [
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              "swedencentral"
+            ],
+            "properties": null,
+            "resourceType": "searchServices",
+            "zoneMappings": null
+          }
+        ]
+      },
+      {
+        "id": null,
+        "namespace": "Microsoft.ContainerRegistry",
+        "providerAuthorizationConsentState": null,
+        "registrationPolicy": null,
+        "registrationState": null,
+        "resourceTypes": [
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              "swedencentral"
+            ],
+            "properties": null,
+            "resourceType": "registries",
+            "zoneMappings": null
+          }
+        ]
+      },
+      {
+        "id": null,
+        "namespace": "Microsoft.App",
+        "providerAuthorizationConsentState": null,
+        "registrationPolicy": null,
+        "registrationState": null,
+        "resourceTypes": [
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              "swedencentral"
+            ],
+            "properties": null,
+            "resourceType": "managedEnvironments",
+            "zoneMappings": null
+          },
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              "swedencentral"
+            ],
+            "properties": null,
+            "resourceType": "containerApps",
+            "zoneMappings": null
+          }
+        ]
+      },
+      {
+        "id": null,
+        "namespace": "Microsoft.Insights",
+        "providerAuthorizationConsentState": null,
+        "registrationPolicy": null,
+        "registrationState": null,
+        "resourceTypes": [
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              "swedencentral"
+            ],
+            "properties": null,
+            "resourceType": "components",
+            "zoneMappings": null
+          }
+        ]
+      },
+      {
+        "id": null,
+        "namespace": "Microsoft.CognitiveServices",
+        "providerAuthorizationConsentState": null,
+        "registrationPolicy": null,
+        "registrationState": null,
+        "resourceTypes": [
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              "swedencentral"
+            ],
+            "properties": null,
+            "resourceType": "accounts",
+            "zoneMappings": null
+          },
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              "swedencentral"
+            ],
+            "properties": null,
+            "resourceType": "accounts/projects",
+            "zoneMappings": null
+          },
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              null
+            ],
+            "properties": null,
+            "resourceType": "accounts/projects/connections",
+            "zoneMappings": null
+          },
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              null
+            ],
+            "properties": null,
+            "resourceType": "accounts/deployments",
+            "zoneMappings": null
+          },
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              null
+            ],
+            "properties": null,
+            "resourceType": "accounts/connections",
+            "zoneMappings": null
+          }
+        ]
+      },
+      {
+        "id": null,
+        "namespace": "Microsoft.Authorization",
+        "providerAuthorizationConsentState": null,
+        "registrationPolicy": null,
+        "registrationState": null,
+        "resourceTypes": [
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              null
+            ],
+            "properties": null,
+            "resourceType": "roleAssignments",
+            "zoneMappings": null
+          }
+        ]
+      }
+    ],
+    "provisioningState": "Succeeded",
+    "templateHash": "726419848336383472",
+    "templateLink": null,
+    "timestamp": "2026-03-23T15:06:54.771975+00:00",
+    "validatedResources": null,
+    "validationLevel": null
+  },
+  "resourceGroup": "rg-demo-jd",
+  "tags": null,
+  "type": "Microsoft.Resources/deployments"
+}
