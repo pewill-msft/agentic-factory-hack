@@ -1,6 +1,6 @@
 # Challenge 0: Environment Setup
 
-Welcome to your very first challenge! In this challenge, we’ll set the foundation for the hackathon. You’ll deploy the required Azure resources, set up your development environment, and prepare the assets needed for the next challenges. By the end, you’ll have everything ready for the rest of the hackathon.
+Welcome to your very first challenge! In this challenge, we’ll set the foundation for the hackathon. You’ll verify the required Azure resources, set up your development environment, and prepare the assets needed for the next challenges. By the end, you’ll have everything ready for the rest of the hackathon.
 
 If something isn’t working as expected, please let your coach know.
 
@@ -17,7 +17,7 @@ If something isn’t working as expected, please let your coach know.
 
 The goals for this challenge are:
 
-- Provision the Azure resources needed for the upcoming challenges.
+- Verify existing Azure resources needed for the upcoming challenges.
 - Seed sample data for the tire factory predictive maintenance multi-agent system.
 
 ## 🧭 Context and Background
@@ -152,13 +152,7 @@ Sample parts with low stock trigger reorder alerts.
 
 ## ✅ Tasks
 
-### Task 1: Fork the repository
-
-Before you start, please [fork this repository](https://github.com/microsoft/agentic-factory-hack/fork) to your GitHub account by clicking the *Fork* button in the upper right corner of the repository's main screen (or follow the [documentation](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo#forking-a-repository)). This will allow you to make changes to the repository and save your progress.
-
----
-
-### Task 2: Launch the development environment
+### Task 1: Launch the development environment
 
 GitHub Codespaces is a cloud-based development environment that allows you to code from anywhere. It provides a fully configured environment that can be launched directly from any GitHub repository, saving you from lengthy setup times. You can access Codespaces from your browser, Visual Studio Code, or the GitHub CLI, making it easy to work from virtually any device.
 
@@ -178,7 +172,7 @@ Please select your forked repository from the dropdown and, if necessary, adjust
 
 ---
 
-### Task 3: Log in to Azure
+### Task 2: Log in to Azure
 
 Once your Codespace has started, log in to the Azure CLI by running the command below in the terminal and following the prompts.
 
@@ -188,47 +182,7 @@ az login --use-device-code
 
 ---
 
-### Task 4: Deploy Resources
-
-In this step, you create the resources that will be used throughout the day.
-
-> [!IMPORTANT]
-> Depending on the setup for the hackathon, the Azure resources might already have been provisioned for you and you can then skip this step.
-> Check with your hackathon coach what is applicable for you.
-
-<details>
-<summary>Deploy Azure resources</summary>
-
-```bash
-# Ensure Microsoft.AlertsManagement resource provider is registered for use in the subscription
-az provider register --namespace Microsoft.AlertsManagement
-
-# Ensure you are located in the challenge-0 directory
-cd challenge-0
-
-# Make resource group name easy to identify. Use your initials or other identifier (e.g., "jd" for John Doe)
-export RG_SUFFIX="<initials>"
-
-# Set variables with your initials as suffix
-export RESOURCE_GROUP="rg-tire-factory-hack-${RG_SUFFIX}"
-export LOCATION="swedencentral"
-
-# Create resource group
-az group create --name $RESOURCE_GROUP --location $LOCATION
-
-# Deploy infrastructure
-az deployment group create \
-  --resource-group $RESOURCE_GROUP \
-  --template-file infra/azuredeploy.json \
-  --parameters location=$LOCATION
-```
-
-⏱️Deployment takes approximately 5-10 minutes.
-
-
-</details>
-
-### Task 5: Verify the creation of your resources
+### Task 3: Verify the Azure resources
 
 Go to the [Azure Portal](https://portal.azure.com/) and find your resource group, which should now contain resources like this:
 
@@ -236,21 +190,16 @@ Go to the [Azure Portal](https://portal.azure.com/) and find your resource group
 
 ---
 
-### Task 6: Retrieve keys for environment variables
+### Task 4: Retrieve keys for environment variables
 
 After deploying resources, configure environment variables in the `.env` file. Ensure you're logged into **Azure CLI**, then run the `get-keys.sh` script to automatically populate the required values.
-
-> [!IMPORTANT]
-> Wait until all Azure resources are successfully deployed before starting this task.
-> Otherwise, the environment variables may not be extracted correctly.
-> If the environment is pre-created for you, the resource group name will be provided by the hackathon coaches. Set it using `export RESOURCE_GROUP='your predefined resource group name'`
 
 ```bash
 # Ensure you are in the challenge-0 directory
 cd challenge-0
 
 # Extract connection keys
-./get-keys.sh --resource-group $RESOURCE_GROUP
+./get-keys.sh --resource-group <your resource group name> # example: rg-hack-pw
 
 # Verify .env file. No entries should be empty
 cat ../.env
@@ -270,7 +219,7 @@ export $(cat ../.env | xargs)
 
 ---
 
-### Task 7: Seed Factory Sample Data
+### Task 5: Seed Factory Sample Data
 
 As mentioned in [Context and Background](#-context-and-background), there are several data sources used throughout the hackathon. Run the script below to upload data to **Cosmos DB** and the **Storage Account**, and to create the required APIs in **API Management**.
 
@@ -280,63 +229,6 @@ As mentioned in [Context and Background](#-context-and-background), there are se
 ```
 ---
 
-### Task 8: Assign additional permissions
-
-To perform certain tasks in the hackathon, you need the following permissions:
-
-- `Azure AI Developer` on the **Foundry project** resource (agent/project operations)
-- `Azure AI User` on the **AI Services** resource (agent create/run operations)
-- `Cognitive Services OpenAI Contributor` on the **Azure OpenAI** resource (calling chat completions)
-
-> [!IMPORTANT]
-> Depending on the setup for the hackathon, the Azure roles might already have been assigned to you in advance, and you can then skip this step.
-> Check with your hackathon coach what is applicable for you.
-
-<details>
-<summary>Assign permissions</summary>
-
-```bash
-# Get your Entra ID (AAD) user object ID
-ME_OBJECT_ID="$(az ad signed-in-user show --query id -o tsv)"
-
-# Assign "Azure AI Developer" at the AI Foundry Project resource scope
-az role assignment create \
-  --assignee-object-id "$ME_OBJECT_ID" \
-  --assignee-principal-type User \
-  --role "Azure AI Developer" \
-  --scope "$AZURE_AI_PROJECT_RESOURCE_ID"
-
-# Assign "Azure AI User" at the AI Services resource scope
-# This is required for agent operations (create/run agents)
-# Derive the AI Services ID from the project resource ID
-AI_SERVICES_ID="${AZURE_AI_PROJECT_RESOURCE_ID%/projects/*}"
-
-az role assignment create \
-  --assignee-object-id "$ME_OBJECT_ID" \
-  --assignee-principal-type User \
-  --role "Azure AI User" \
-  --scope "$AI_SERVICES_ID"
-
-# Assign "Cognitive Services OpenAI Contributor" at the Azure OpenAI resource scope
-# This is required for data-plane calls like: /openai/deployments/{deployment}/chat/completions
-OPENAI_RESOURCE_ID="$(az cognitiveservices account show --name "$AZURE_OPENAI_SERVICE_NAME" --resource-group "$RESOURCE_GROUP" --query id -o tsv)"
-
-az role assignment create \
-  --assignee-object-id "$ME_OBJECT_ID" \
-  --assignee-principal-type User \
-  --role "Cognitive Services OpenAI Contributor" \
-  --scope "$OPENAI_RESOURCE_ID"
-
-# Refresh your credentials with the new permissions
-az login --use-device-code
-```
-
-Role assignments can take **5–10 minutes** to fully propagate. If you still see `PermissionDenied` errors after assigning roles, wait a few minutes, then run `az login --use-device-code` again and re-export your environment variables.
-
-</details>
-
-
-<br/>
 🎉 Congratulations! Your sample tire factory environment is ready.
 
 ## 🚀 Go Further
