@@ -67,6 +67,13 @@ It's also important to understand what fine-tuning **doesn't** do. A base LLM is
 
 This is why fine-tuning works best for **stable patterns** like response style, threshold interpretation, standard procedures, and recurring terminology. For **fast-changing facts**, such as current inventory, newly added machines, or the latest maintenance advisories, retrieval is usually the better fit.
 
+**How to reason about training data vs. RAG/tools:**
+
+- Put examples in **training data** when you want the model's default behavior to stay consistent over time: response style, diagnostic flow, fault taxonomy, threshold interpretation, and standard safety procedures.
+- Use **RAG** for reference material that may evolve but still benefits from document grounding at runtime: manuals, policies, troubleshooting guides, and approved procedures.
+- Use **tools** for live operational state that should come from a current source of truth: inventory levels, supplier lead times, maintenance windows, technician availability, work orders, and scheduler scoring logic.
+- If a fact becoming stale would lead to a bad operational decision, it should be retrieved or looked up at runtime rather than baked into the fine-tuned model.
+
 ### Pre-Deployed Models
 
 Your project has three models already deployed:
@@ -107,6 +114,7 @@ Here's an example entry:
 - Responses include **specific thresholds** (178°C, 3.0 mm/s, 230 N)
 - Responses reference **part numbers** (TCP-HTR-4KW, TBM-BRG-6220)
 - Responses use **standard fault type names** (curing_temperature_excessive, building_drum_vibration)
+- Some examples intentionally teach the model to **consult runtime systems** for live inventory, scheduling, or supplier facts instead of memorizing brittle operational values
 - There are approximately **30 examples** covering all five machine types
 
 > [!TIP]
