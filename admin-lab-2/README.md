@@ -4,7 +4,7 @@
 
 This lab focuses on **monitoring agent behavior** and **evaluating agent quality** — all through the Foundry Portal and Azure Monitor. You'll create a fresh agent, generate trace data, explore dashboards, and run an evaluation.
 
-**Expected duration**: 35 min
+**Expected duration**: 35-40 min
 
 **Prerequisites**:
 
@@ -19,6 +19,7 @@ This lab focuses on **monitoring agent behavior** and **evaluating agent quality
 - Explore the agent monitoring dashboard — token usage, run counts, errors.
 - Drill into individual agent traces to understand execution details.
 - Navigate from Foundry Portal into Application Insights for deeper analysis.
+- Learn the basics of Kusto Query Language (KQL) and inspect telemetry tables.
 - Set up and run an evaluation with built-in quality metrics.
 - Interpret evaluation scores and identify areas for improvement.
 
@@ -41,11 +42,48 @@ Azure AI Foundry provides a layered observability architecture:
 |-------|--------------|-----------------|
 | **Agent Monitoring Dashboard** | High-level metrics — token usage, run count, tool calls, errors | Foundry Portal → Agent → Monitor tab |
 | **Agent Traces** | Individual execution details — message flow, latency, token counts per step | Foundry Portal → Agent → Traces |
-| **Application Insights** | Full telemetry — KQL queries, transaction search, custom dashboards | Azure Portal → Application Insights |
+| **Application Insights** | Full telemetry — dashboards, traces, KQL queries, custom dashboards | Azure Portal → Application Insights |
 | **Evaluations** | Quality scores — groundedness, relevance, coherence, fluency | Foundry Portal → Evaluations |
 
 > [!TIP]
 > If you completed Challenge 3 (coding track), your agents already have trace data in Application Insights. The dashboards in this lab will show that data too. If not, don't worry — you'll generate fresh data in Task 1.
+
+### What KQL Is and Why It Matters
+
+**Kusto Query Language (KQL)** is the query language used across Azure Monitor, Log Analytics, and Application Insights. It lets you inspect raw telemetry, filter to the exact runs you care about, and summarize behavior over time.
+
+For this lab, KQL is useful for questions such as:
+- Which telemetry tables are receiving data from this agent?
+- What operations ran in the last 1-2 hours?
+- Are token usage and agent invocations showing up in `customEvents` or `dependencies`?
+
+If you're new to KQL, think of it as a pipeline:
+- Start with a table such as `customEvents` or `dependencies`
+- Filter rows with `where`
+- Pick useful columns with `project`
+- Sort with `order by`
+- Limit results with `take`
+
+In this portal experience, it's often easiest to start in **Simple mode** to inspect which tables contain data, then switch to **KQL mode** to write a custom query.
+
+### How to Think About Evaluations
+
+Evaluations are how teams turn agent quality from a subjective impression into something they can measure over time.
+
+In practice, teams use evaluations to:
+- establish a **baseline** before making prompt, tool, or model changes
+- compare one version of an agent against another
+- define simple **acceptance thresholds** before release, such as a minimum task completion or groundedness score
+
+It also helps to know that evaluators are not all the same:
+- Some evaluators use an AI model as a judge to score output quality or agent behavior.
+- Others use rules or more deterministic checks.
+
+When you review results in Foundry, think at two levels:
+- **Run-level results** summarize the whole evaluation, including pass/fail counts, evaluator summaries, and token usage.
+- **Row-level results** show what happened for each individual prompt so you can inspect specific failures and understand why a score dropped.
+
+For this workshop, the goal is not to build a full production evaluation pipeline. The goal is to learn the workflow: create a dataset, run a small evaluation, inspect the results, and use those results to guide the next improvement.
 
 ---
 
@@ -56,12 +94,12 @@ Azure AI Foundry provides a layered observability architecture:
 First, let's create a simple maintenance advisor agent and send it some test conversations.
 
 1. In the Foundry Portal at [ai.azure.com](https://ai.azure.com), click **Build** in the top navigation bar.
-2. Select **Agents** in the left sidebar, then click **+ New agent**.
+2. Select **Agents** in the left sidebar, then click **Create agent**.
 3. Configure the agent:
 
 | Setting | Value |
 |---------|-------|
-| **Agent name** | `Contoso Tires Maintenance Advisor` |
+| **Agent name** | `MaintenanceAdvisor` |
 | **Model** | `gpt-4.1` |
 | **Instructions** | *(copy the system prompt below)* |
 
@@ -78,7 +116,7 @@ Key machines in the facility:
 Always reference specific thresholds, part numbers, and estimated repair times when applicable. Prioritize safety — recommend lock-out/tag-out procedures for any physical maintenance tasks.
 ```
 
-4. Click **Create** to save the agent.
+4. Click **Save** to save the agent.
 
 5. Now send **5–6 test conversations** to generate trace data. Use the agent's chat interface and send each of these prompts as separate conversations:
 
@@ -107,46 +145,49 @@ Always reference specific thresholds, part numbers, and estimated repair times w
 
 The agent responds to each prompt with manufacturing-specific guidance. Each conversation generates trace data.
 
-![Agent Created](./images/agent-created.png)
 
 ### Task 2: Explore the Agent Monitoring Dashboard
 
-1. In the Foundry Portal, navigate to your **Contoso Tires Maintenance Advisor** agent.
+1. In the Foundry Portal, navigate to your **Maintenance Advisor** agent.
 2. Click the **Monitor** tab (or look for monitoring/analytics in the agent's detail page).
-3. Review the dashboard metrics:
+3. Review the dashboard cards and charts:
 
 | Metric | What to Look For |
 |--------|-----------------|
-| **Agent runs** | Total count of conversations — should match the 6 you sent |
-| **Token usage** | Total tokens consumed (prompt + completion) — gives cost visibility |
-| **Average latency** | Response time per run — important for production SLAs |
-| **Error rate** | Should be 0% for our test conversations |
-| **Tool calls** | 0 for this basic agent (no tools attached) |
+| **Estimated cost** | May show `$0` or remain limited depending on billing access; this is a cost summary card, not a usage validator |
+| **Total token usage** | Total tokens consumed across your runs; should increase after your test prompts |
+| **Agent runs** | The number of runs started and completed; should roughly match the conversations you sent |
+| **Runs and token metrics** | A trend chart showing token growth over time alongside agent run count |
+| **Tool calls and agent runs** | How often the agent ran and how many tools were invoked; for a basic agent with no tools, tool calls should stay at 0 |
+| **Error rate** | Should remain at 0% for these test conversations |
+| **Evaluations / Scheduled evaluations** | Configuration entry points for evaluation workflows rather than usage metrics |
 
-4. Note the time range selector — you can filter to the last hour, 24 hours, 7 days, etc.
+4. Note the time range selector — you can filter to the last day, 7 days, etc.
 
 **💬 What to observe:**
-- Token usage varies by prompt complexity. The multi-machine triage prompt likely used the most tokens.
-- In production, you'd monitor these dashboards to detect cost spikes, latency degradation, or increasing error rates.
+- **Total token usage** and the **Runs and token metrics** chart should move upward as you send more prompts.
+- **Agent runs** should show both started and completed runs. If those diverge, investigate failed or stuck runs.
+- **Tool calls and agent runs** is especially useful once you attach tools in later labs. For this basic agent, the chart should reflect runs but no tool activity.
+- **Error rate** should stay flat at 0% for this exercise. In production, this is one of the fastest ways to detect regressions.
 
 **✅ Expected result**
 
-The monitoring dashboard showing agent run counts and token usage for your test conversations.
+The monitoring dashboard showing operational metrics such as total token usage, agent runs, tool calls, and error rate for your test conversations.
 
 ![Agent Monitoring Dashboard](./images/agent-monitoring-dashboard.png)
 
 ### Task 3: Drill into Agent Traces
 
-1. From the agent's detail page, look for **Traces** or **Tracing** (this may be under the Monitor tab or a separate tab).
-2. Select one of your recent agent runs to view its trace details.
+1. From the agent's detail page, look for **Traces**.
+2. Select **Responses** tab and click one of your recent agent runs to view its trace details.
 3. Examine the **trace tree** — the sequence of operations for that run:
    - **User message** — your input prompt
    - **LLM call** — the model invocation with the full prompt (system + user)
    - **Assistant response** — the generated output
 4. For each step, review:
-   - **Latency** — how long did the LLM call take?
+   - **Start time** and **End time** — how long did the LLM call take?
    - **Token count** — prompt tokens vs. completion tokens
-   - **Model** — which deployment was used
+
 
 **💬 What to observe:**
 - The trace shows the full prompt sent to the model, including the system message. This is useful for debugging unexpected responses.
@@ -163,89 +204,162 @@ An individual trace showing the message flow: user message → LLM call → assi
 
 For deeper analysis, let's explore the raw telemetry in Azure Application Insights.
 
-1. From the trace view in the Foundry Portal, look for an **"Open in Azure Monitor"** or **"View in Application Insights"** link.
+1. From the **Monitor** view in the Foundry Portal, select the **"Open in Azure Monitor"** link.
    - Alternatively, open the **Azure portal** at [portal.azure.com](https://portal.azure.com), navigate to your resource group, and click on the **Application Insights** resource directly.
-2. In Application Insights, explore **Transaction Search**:
-   - Search for recent transactions — you should see entries corresponding to your agent runs.
-   - Click on a transaction to see the **end-to-end transaction detail** — a timeline of all operations for that request.
-3. Try a simple **KQL query** in the **Logs** section. Click **Logs** in the left sidebar and run:
-
-```kusto
-traces
-| where timestamp > ago(1h)
-| where message contains "Contoso" or message contains "agent"
-| project timestamp, message, severityLevel
-| order by timestamp desc
-| take 20
-```
-
-4. Explore the **Performance** view — this shows response times across all agent runs and helps identify outliers.
-
+2. Start with the **Application Insights dashboard** rather than going straight to Logs. Review the main panels:
+   - **Agent Runs** — confirms whether recent runs are arriving in Application Insights.
+   - **Gen AI Errors** — quickly shows whether the selected time range contains failed traces.
+   - **Tool Calls** — should remain empty for this basic agent because no tools are attached.
+   - **Models** — shows which deployed model handled the requests.
+   - **Token Consumption by Model** and **Input vs Output Tokens** — useful for validating that your test prompts generated measurable usage.
+3. Click **View Traces with Agent Runs** from the **Agent Runs** panel.
+   - This opens the trace list filtered to agent-run telemetry.
+   - Select one of the recent traces.
+   - Review the trace summary: operation name, timestamp, duration, item count, and token usage.
+   - Expand the trace details and inspect the dependency information tied to the agent invocation.
 > [!TIP]
-> Application Insights is where production teams spend most of their troubleshooting time. The KQL query language is powerful for filtering, aggregating, and alerting on telemetry data. Bookmark this resource for your project.
+> In the current portal experience, the dashboard and trace drill-down are usually the fastest way to confirm ingestion. Use them first, then move to Logs and KQL.
+
+> [!NOTE]
+> **Troubleshooting: Foundry Monitor shows new runs, but Application Insights only shows old data**
+>
+> If you can see fresh data in the Foundry **Monitor** tab but your Application Insights queries only return old runs, try reconnecting the App Insights resource:
+>
+> 1. In the Foundry Portal, go to **Operate** → **Admin**.
+> 2. Select your **Foundry project**.
+> 3. Open **Connected resources**.
+> 4. Find the resource with category **AppInsights** and select **Delete connection**.
+> 5. Go back to your agent under **Build**.
+> 6. Open the agent's **Monitor** tab.
+> 7. Choose **Connect** and reconnect the correct **Application Insights** resource.
+>
+> After reconnecting, send a new test prompt to the agent and wait a few minutes before querying again.
 
 **✅ Expected result**
 
-Application Insights showing transaction search results and the KQL query output.
+Application Insights showing the dashboard panels and a filtered trace list from **View Traces with Agent Runs**.
 
 ![Application Insights](./images/application-insights.png)
 
-### Task 5: Set Up an Evaluation
+### Task 5: Explore Logs and Write Your First KQL Queries
 
-Evaluations measure the **quality** of agent responses using built-in metrics. Let's evaluate our maintenance advisor.
+Now that you've confirmed telemetry is arriving, use **Logs** to inspect the raw tables behind the dashboard.
 
-1. In the Foundry Portal, navigate to **Operate** in the top navigation bar.
-2. Look for **Evaluations** in the left sidebar (it may be under an **Observability** or **Quality** section).
-3. Click **+ New evaluation**.
-4. Configure the evaluation:
+1. In Application Insights, click **Logs** in the left sidebar.
+2. If the **Queries hub** dialog opens, close it using the **X** in the upper-right corner.
+3. If the editor opens in **Simple mode**, keep it there first so you can inspect the available tables.
+4. In **Simple mode**, select a telemetry table and preview recent rows:
+   - Start with **customEvents**.
+   - Then inspect **dependencies**.
+   - Notice that for these agent runs, useful telemetry may appear in **customEvents** and **dependencies**, even if **traces** is empty.
+5. Once you've inspected the tables, switch the editor from **Simple mode** to **KQL mode**.
+6. Run this query to see which common Application Insights tables currently contain recent data:
 
-| Setting | Value |
-|---------|-------|
-| **Target** | Your `Contoso Tires Maintenance Advisor` agent |
-| **Evaluation metrics** | Select: **Groundedness**, **Relevance**, **Coherence**, **Fluency** |
-| **Test data** | Create or upload test prompts *(see below)* |
+```kusto
+union isfuzzy=true traces, requests, dependencies, customEvents, exceptions
+| where timestamp > ago(2h)
+| order by timestamp desc
+| take 100
+```
 
-5. Use these evaluation prompts (enter them as the test dataset):
+7. Review the results:
+   - **itemType** tells you which table each row came from.
+   - **customDimensions** often contains AI-specific metadata.
+   - **customMeasurements** may contain token usage values.
+8. Now generate a chart so you can visualize recent telemetry activity over time:
 
-| # | Test Prompt | Expected Topic |
-|---|-------------|---------------|
-| 1 | What should I check if curing press TC-100 temperature reads 179°C? | Fault diagnosis — curing temp |
-| 2 | Describe the bearing replacement procedure for tire building machine TB-200. | Maintenance procedure |
-| 3 | What parts are needed for bladder replacement on the curing press? Include part numbers. | Parts knowledge |
-| 4 | Machine E1 mixer vibration is at 5.8 mm/s. Is this a safety concern? | Safety assessment |
-| 5 | How should I prioritize repairs when multiple machines have warnings? | Triage logic |
+```kusto
+union isfuzzy=true customEvents, dependencies
+| where timestamp > ago(2h)
+| summarize telemetryCount = count() by bin(timestamp, 5m), itemType
+| render timechart
+```
 
-6. Start the evaluation run.
+9. Review the chart:
+   - Each series represents a telemetry table such as **customEvents** or **dependencies**.
+   - Spikes should line up with the time when you sent your test prompts.
+   - If one table stays flat while another rises, that tells you where the agent is actually writing telemetry.
+10. Use the query results and chart to confirm:
+   - recent agent activity is arriving in the workspace
+   - the operation names line up with your test runs
+   - the telemetry pattern over time matches your test activity
 
-> [!NOTE]
-> Evaluation runs can take a few minutes as each test prompt is sent to the agent and the responses are scored by an evaluator model.
 
 **✅ Expected result**
 
-The evaluation run appears in the list with status "Running" and eventually "Completed".
+The **Logs** experience opens successfully, you dismiss the **Queries hub**, switch from **Simple mode** to **KQL mode**, inspect recent telemetry rows, and generate a time chart showing activity from **customEvents** and **dependencies**.
+
+### Task 6: Set Up an Evaluation
+
+Evaluations measure the **quality** of agent responses using built-in metrics. Let's evaluate our maintenance advisor.
+
+1. In the Foundry Portal, navigate to **Build** in the top navigation bar.
+2. Select **Evaluations** in the left sidebar.
+3. Click **Create**.
+4. The evaluation setup opens as a **wizard** with four sections: **Target**, **Data**, **Criteria**, and **Review**.
+5. In **Target**:
+   - Select **Agent**.
+   - Choose your **MaintenanceAdvisor** agent.
+   - If multiple versions are listed, pick the current version you want to evaluate.
+   - Click **Next**.
+6. In **Data**:
+   - Select **Synthetic generation**.
+   - Click **Generate** to open the **Generate synthetic dataset** dialog.
+   - In the dialog:
+     - Set **Name of the new dataset** to `maintenanceadvisor-eval-dataset`.
+     - Select **gpt-4o-mini** as the **Model**.
+       - Set **Number of rows** to **30**.
+     - In **Prompt**, enter: `Generate maintenance troubleshooting, repair planning, safety, parts, and triage questions for the Contoso Tires factory scenario.`
+     - Leave **Seed data** empty for this lab.
+   - Click **Confirm** to create the synthetic dataset.
+   - After the dataset is generated, return to the wizard and continue.
+   - Click **Next**.
+   - The **Existing dataset** option is available, but it is the manual path and is not used in this lab.
+
+7. In **Criteria**:
+   - The wizard may auto-suggest a larger set of evaluators across **Agents**, **Quality**, and **Safety**.
+   - For this lab, keep the evaluation intentionally small so the run finishes faster and the results are easy to interpret.
+   - Remove the auto-suggested evaluators you do not need so that only these two evaluators remain:
+      - **TaskCompletion**
+      - **Groundedness**
+   - This gives you one metric for whether the agent completed the job and one metric for whether the response stayed grounded in the provided context.
+   - Remove the tool-specific evaluators, since this agent does not use tools in this lab.
+   - Remove all **Safety** evaluators for this run so the results stay focused and easier to interpret.
+   - In a real-world evaluation pipeline, teams usually keep a broader evaluator set such as **TaskAdherence**, **IntentResolution**, **Relevance**, **Coherence**, **Fluency**, and appropriate **Safety** checks. That gives better coverage, but it also increases evaluation time and makes the first pass harder to interpret.
+   - Click **Next**.
+8. In **Review**:
+   - Confirm the selected agent, version, data source, and criteria.
+   - Submit the evaluation.
+
+> [!NOTE]
+> Even with only **TaskCompletion** and **Groundedness** selected, evaluation runs can still take around **10 minutes** depending on region, capacity, and service load. This lab intentionally uses **30 rows** so you have enough results to reason about patterns instead of drawing conclusions from only a few samples.
+
+**✅ Expected result**
+
+The evaluation wizard completes successfully, and the new run appears in the list with status "In progress" and eventually "Completed".
 
 ![Evaluation Created](./images/evaluation-created.png)
 
-### Task 6: Analyze Evaluation Results
+### Task 7: Analyze Evaluation Results
 
 1. Once the evaluation completes, click on the run to view results.
 2. Review the **overall scores** for each metric:
 
 | Metric | What It Measures | Good Score |
 |--------|-----------------|------------|
-| **Groundedness** | Are responses based on provided context (not hallucinated)? | ≥ 4.0 / 5.0 |
-| **Relevance** | Do responses address the question asked? | ≥ 4.0 / 5.0 |
-| **Coherence** | Is the response logically structured and consistent? | ≥ 4.0 / 5.0 |
-| **Fluency** | Is the language natural and well-written? | ≥ 4.0 / 5.0 |
+| **TaskCompletion** | Did the agent actually complete the requested task? | Higher pass rate is better |
+| **Groundedness** | Are responses based on provided context (not hallucinated)? | Higher pass rate is better |
 
 3. Drill into **individual prompt results** — click on each test prompt to see its score breakdown.
 4. Identify the **lowest-scoring prompt** — what went wrong? Common issues:
+   - Low task completion → Agent gave partial advice or failed to answer the actual maintenance question
    - Low groundedness → Agent may have hallucinated part numbers or thresholds
-   - Low relevance → Agent went off-topic or gave a generic answer
-   - Low coherence → Response was disorganized or contradictory
 
 **💬 What to observe:**
+- The run summary may show aggregate evaluator results as percentages across all rows. For example, a **TaskCompletion** result around **30%** means the agent only fully completed a minority of the generated tasks.
 - Without tools like file search or code interpreter, the agent relies entirely on its training data. Responses about specific part numbers may score lower on groundedness because the model is generating them from memory rather than retrieving them.
+- A low task completion score with a strong groundedness score often means the agent stayed factual but did not fully solve the user's problem.
+- This is a useful failure mode for the lab because it gives you something concrete to reason about: are the instructions too vague, is the agent overly cautious, does it need tool access, or does it need a better prompt for prioritization and actionability?
 - This is exactly the kind of insight that helps you decide: does this agent need RAG tools? Better instructions? Fine-tuning?
 
 **✅ Expected result**
@@ -259,6 +373,7 @@ Evaluation results showing per-metric scores and per-prompt breakdowns.
 
 ## 🚀 Go Further
 
+- **Improve TaskCompletion**: Copy the agent and revise the instructions so responses are more action-oriented. For example, require the agent to always provide a clear diagnosis, a recommended next action, and a short justification. Re-run the same evaluation and compare the **TaskCompletion** percentage before and after. After that, test other improvement techniques such as adding tools from [Portal Lab 3](../portal-lab-3/README.md), grounding the agent with Foundry IQ from [Portal Lab 4](../portal-lab-4/README.md), tightening the system prompt, or switching to a fine-tuned model.
 - **Compare system prompts**: Copy the agent, modify the instructions (e.g., make them shorter or more detailed), and run the same evaluation. Compare scores to see which prompt performs better.
 - **Set up Azure Monitor alerts**: In Application Insights, create an alert rule that triggers when agent error rate exceeds 5% or average latency exceeds 10 seconds.
 - **Evaluate the fine-tuned model**: If your fine-tuning job from [Admin Lab 1](../admin-lab-1/README.md) has completed, create a new agent using the fine-tuned model and run the same evaluation. Compare scores with the base model agent.
@@ -272,6 +387,7 @@ You've built a complete observability workflow:
 - Explored the built-in monitoring dashboard for high-level metrics
 - Drilled into individual traces to understand execution details
 - Navigated from Foundry Portal to Application Insights for deep analysis
+- Used KQL to inspect the raw telemetry tables behind the dashboards
 - Ran an evaluation with built-in quality metrics
 - Interpreted scores and identified improvement opportunities
 
