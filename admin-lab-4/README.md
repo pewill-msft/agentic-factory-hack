@@ -58,34 +58,36 @@ Development (Unpublished)              Production (Published)
 - [Authentication and Authorization in Foundry](https://learn.microsoft.com/en-us/azure/foundry/concepts/authentication-authorization-foundry)
 - [Agent Identity](https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/agent-identity)
 - [Publish an Agent](https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/publish-agent)
+- [What is Microsoft Entra Agent ID?](https://learn.microsoft.com/en-us/entra/agent-id/what-is-microsoft-entra-agent-id)
+- [Authorization with Agent ID](https://learn.microsoft.com/en-us/entra/agent-id/authorization-agent-id)
+- [Agent On-Behalf-Of OAuth Flow](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/agent-on-behalf-of-oauth-flow)
 
 ---
 
 ## ✅ Tasks
 
-## Part A — Identity & Security
-
 ### Task 1: Find the Foundry Project Identity in Entra ID
 
 Every AI Foundry project has a **system-assigned managed identity** — this is the service principal that agents use to authenticate when calling tools and accessing resources during development.
 
-1. Open the **Entra admin center** at [entra.microsoft.com](https://entra.microsoft.com) in your browser.
-2. In the left sidebar, navigate to **Identity** → **Applications** → **Enterprise applications**.
-3. In the search/filter bar, search for your AI Foundry project name or resource group name.
-   - The managed identity typically has the same name as your AI Foundry resource.
-   - Set the **Application type** filter to "Managed Identities" to narrow the results.
-4. Click on the service principal to open its details.
-5. Review the following:
+1. Open the **Microsoft Entra admin center** at [entra.microsoft.com](https://entra.microsoft.com) in your browser.
+2. In the left sidebar, expand **Entra ID** and click **Enterprise apps** (under **Manage**).
+3. In the search bar, type the prefix of your AI Foundry project name or resource group (e.g., `msag`).
+   - **Important**: If the filter bar shows **Application type == Enterprise Applications**, remove that filter by clicking the **×** next to it. Managed identities are not Enterprise Applications, so the filter hides them.
+   - You should see multiple entries corresponding to your Foundry resources (AI project, connections, etc.).
+4. Click on the service principal that matches your AI Foundry project name to open its details.
+5. On the **Overview** page, review the **Properties** section:
 
 | Field | What It Shows |
 |-------|-------------|
-| **Display name** | The name of your AI Foundry resource |
+| **Name** | The name of your AI Foundry resource (e.g., `msagthack-aifoundry-2u7se...`) |
 | **Application ID** | The unique client ID for this identity |
 | **Object ID** | The directory object ID (used in IAM role assignments) |
-| **Managed identity type** | System-assigned |
-| **Permissions** | What API permissions have been granted |
 
-6. Click on **Permissions** in the left sidebar to see what APIs this identity has been granted access to.
+6. Explore the left sidebar sections — **Properties**, **Owners**, **Permissions**, **Sign-in logs** — to understand the identity's configuration and activity.
+
+> [!TIP]
+> The AI Foundry project's managed identity name starts with **`msagthack-aifoundry-`** followed by a random suffix. You can find the exact name in the **Foundry Portal** under your project settings, or in the **Azure portal** by navigating to your resource group and looking for the AI Foundry resource name.
 
 **💬 What to observe:**
 - This single service principal is used by **all agents** in the project. When Agent A calls a tool that accesses Cosmos DB, it authenticates as this identity.
@@ -102,133 +104,204 @@ The Entra enterprise application page showing the managed identity for your AI F
 
 ### Task 2: Review IAM Role Assignments
 
-The managed identity needs specific roles on dependent resources to function. Let's trace the permission chain.
+The managed identity needs specific roles on each connected resource to function. Let's trace the permission chain and see where roles exist — and where they're missing.
 
-1. In the **Azure portal** at [portal.azure.com](https://portal.azure.com), navigate to your **AI Foundry resource**.
+1. In the **Azure portal** at [portal.azure.com](https://portal.azure.com), navigate to your **Storage Account** in the resource group (starts with `msagthacksa`).
 2. Click **Access control (IAM)** in the left sidebar.
 3. Click the **Role assignments** tab.
-4. Look for entries where the **principal** matches the Object ID from Task 1 (the managed identity).
-
-5. Now check IAM on dependent resources. Navigate to each and check **Access control (IAM)** → **Role assignments**:
-
-| Resource | Expected Role for Managed Identity | Why |
-|----------|-----------------------------------|-----|
-| **Storage Account** | Storage Blob Data Contributor (or similar) | Agents access knowledge base files |
-| **AI Search** | Search Index Data Reader (or similar) | Agents query the search index |
-| **Application Insights** | Monitoring Metrics Publisher (or similar) | Agents send telemetry/traces |
-
-6. For each resource, confirm the managed identity's Object ID appears in the role assignments.
+4. Scan the list for any assignments to the Foundry project's managed identity (the one you found in Task 1).
 
 **💬 What to observe:**
-- The managed identity needs **specific roles on each connected resource**. If a role is missing, the agent will get a permission error when trying to access that resource.
-- In production, you'd want to follow the **principle of least privilege** — grant only the minimum roles needed. For example, "Storage Blob Data Reader" if agents only need to read files, not write them.
+- You should see **no role assignments** for the Foundry project's managed identity on this storage account. The managed identity has not been granted access here yet.
+- Without roles like **Storage Blob Data Contributor** or **Storage Blob Data Reader**, an agent trying to read or write blob data through this identity would receive a **403 Forbidden** error.
+- This is the expected state — resources start with no permissions until explicitly granted. This is the **principle of least privilege** in action.
+
+5. Now navigate to your **AI Search** resource (starts with `msagthack-search-`) and repeat:
+   - Click **Access control (IAM)** → **Role assignments** tab.
+   - Here you **will** see the managed identity with roles like **Search Index Data Reader** and **Search Service Contributor** — these were assigned when the AI Search connection was created during provisioning.
+
+| Resource | Managed Identity Roles | Why |
+|----------|----------------------|-----|
+| **AI Search** | Search Index Data Reader, Search Service Contributor | Assigned when the search connection was provisioned |
+| **Storage Account** | *(none)* | No connection using managed identity exists yet |
+
+> [!TIP]
+> You can also use **Check access** (on the Check access tab) to search for the managed identity specifically. Select **Managed identity** → **All system-assigned managed identities** → select your Foundry project identity to see its roles on any given resource.
 
 **✅ Expected result**
 
-The IAM blade showing role assignments on the AI Foundry resource, with the managed identity visible.
+The IAM blade on the Storage Account showing no role assignments for the Foundry managed identity — confirming that permissions are missing before a managed-identity connection is created.
 
 ![IAM Role Assignments](./images/iam-role-assignments.png)
 
-### Task 3: Secure Tool and Connection Access
+### Task 3: Create a Connection and Understand RBAC Requirements
 
-Agents in Foundry access external resources through **connections**. Each connection represents a link to a service (Storage, AI Search, Cosmos DB, etc.). Let's review how access to these connections is controlled.
+Now let's create a new connection to the Storage Account using **Microsoft Entra ID** authentication — and observe the RBAC warning that Foundry displays.
 
-1. In the **Foundry Portal**, navigate to your project.
-2. Look for **Connections** or **Connected resources** (typically under **Operate** → **Project settings** or **Assets**).
-3. Review the list of connections:
+#### Step 1: Review Existing Connections
 
-| Connection | Type | What It Accesses |
-|-----------|------|-----------------|
-| Storage | Azure Blob Storage | Knowledge base files, training data |
-| AI Search | Azure AI Search | Search indexes for RAG |
-| (Others) | Various | Cosmos DB, API Management, etc. |
+1. In the **Foundry Portal** at [ai.azure.com](https://ai.azure.com), click **Operate** in the top navigation bar.
+2. Click **Admin** in the left sidebar.
+3. Select your project (e.g., `msagthack-aiproject-...`).
+4. Click the **Connected resources** tab.
+5. Review the existing connections (your list may differ depending on previous labs):
 
-4. Click on a connection to examine its configuration:
-   - **Authentication type** — API key, managed identity, or service principal?
-   - **Access scope** — Who can use this connection? All agents in the project, or restricted to specific agents?
+| Name | Category | Auth method | What It Accesses |
+|------|----------|-------------|-----------------|
+| `msagthack-aifoundry-...-aisearch` | CognitiveSearch | API Key | AI Search index for RAG queries |
+| `kb-machine-diagnostics-...` | RemoteTool | Custom Keys | Knowledge base diagnostics via MCP |
+| `machine-data-connection` | RemoteTool | Custom Keys | Machine data via API Management MCP endpoint |
+| `maintenance-data-connection` | RemoteTool | Custom Keys | Maintenance data via API Management MCP endpoint |
+| `msagthack-appinsights-...` | AppInsights | API Key | Application Insights for telemetry |
 
-5. Consider the security implications:
+6. Note the authentication methods — **API Key** and **Custom Keys**. None of these use identity-based authentication yet.
 
-**💬 Things to think about:**
-- If a connection uses an **API key**, that key is shared by all agents in the project. Rotating the key affects all agents simultaneously.
-- **Managed identity** authentication is generally preferred — no secrets to manage, and permissions are controlled via IAM roles (which you reviewed in Task 2).
-- In production, you may want to **restrict which agents can use which connections** — for example, a diagnostic agent shouldn't need access to the parts ordering API.
+#### Step 2: Create a Storage Account Connection
 
-> [!IMPORTANT]
-> Connection-level access control is critical for production security. An agent with access to a write-enabled Cosmos DB connection could potentially modify factory data. Ensure agents only have connections to the resources they need, with the minimum required permissions.
+1. Click the **Add connection** button.
+2. In the **Choose a connection** dialog, scroll to the **Data** section and select **Storage Account**.
+3. In the **Create a new connection** dialog:
+   - **Storage Account**: Select your storage account (e.g., `msagthacksa3yeaheufhagy6`).
+   - **Auth Type**: Select **Microsoft Entra ID**.
+4. Notice the warning banner:
+
+   > ⚠️ *Changing the authentication method to Entra ID will require advanced role-based authentication settings for individual users to access this connection. Contact your admin for help or learn more about RBAC settings.*
+
+5. Click **Connect** to create the connection.
+
+**💬 What to observe:**
+- The warning is telling you that **creating the connection alone is not enough**. Unlike API key connections where the key provides immediate access, Entra ID connections rely on RBAC role assignments that must be configured separately.
+- Foundry does **not** automatically add the required IAM roles on the storage account for your project's managed identity. An admin must grant the appropriate roles (e.g., **Storage Blob Data Contributor**) on the target resource.
+- This is by design — it enforces **separation of concerns**: the person creating the connection (a developer) may not have permission to modify IAM roles (an admin task).
+- This means the connection exists in Foundry, but it would **fail at runtime** if an agent tried to use it to access blob data — because the underlying RBAC permissions are missing. Creating a connection defines *what* to connect to; IAM roles define *whether* the identity is allowed to.
+
+5. Consider the **Auth method** implications across all your connections:
+
+| Auth Method | Secrets to Manage | Who Controls Access | Best For |
+|------------|-------------------|-------------------|----------|
+| **API Key** | Yes — key rotation needed | Key holder | Quick setup, dev/test |
+| **Microsoft Entra ID** | No — uses identity | IAM admin via RBAC roles | Production workloads |
+| **Project Managed Identity** | No — uses project identity | IAM admin via RBAC roles | Project-scoped resources |
+| **Custom Keys** | Varies | Service-specific | Third-party integrations |
 
 **✅ Expected result**
 
-The connections page showing linked resources and their authentication types.
+The new storage account connection appears in the Connected resources list with **Microsoft Entra ID** as the auth method, and the warning banner is displayed during creation.
 
 ![Connections](./images/connections.png)
 
----
-
-## Part B — Publishing & Post-Publish Identity
+> [!IMPORTANT]
+> In production, **Microsoft Entra ID** (identity-based) authentication is recommended over API keys. It eliminates secret management, enables fine-grained RBAC, and provides audit trails through Entra sign-in logs. However, it requires that an admin explicitly assigns the correct roles — the connection alone is not sufficient.
 
 ### Task 4: Create and Publish an Agent
 
-Let's publish an agent and observe what happens to its identity.
+Let's create a simple agent, publish it, and observe what happens to its identity.
 
-1. First, ensure you have an agent to publish. Either:
-   - Use the **Contoso Tires Maintenance Advisor** from [Admin Lab 2](../admin-lab-2/README.md) (if you completed it), or
-   - Create a new simple agent: **Build** → **Agents** → **+ New agent** with:
+#### Step 1: Create the Agent
+
+1. In the **Foundry Portal**, navigate to **Build** → **Agents** → **Create agent**.
+2. Configure the agent:
 
 | Setting | Value |
 |---------|-------|
-| **Agent name** | `Contoso Tires Advisor` |
+| **Agent name** | `ContosoTiresAdvisor` |
 | **Model** | `gpt-4.1` |
 | **Instructions** | `You are a maintenance advisor for Contoso Tires. Help technicians diagnose faults and plan repairs. Reference specific thresholds and part numbers.` |
 
-2. Navigate to the agent's detail page.
-3. Look for a **Publish** button or option.
-4. Walk through the publish workflow:
-   - Review the publishing configuration — endpoint URL, authentication settings
-   - Confirm the publish operation
+3. Save the agent.
+
+#### Step 2: Publish the Agent
+
+1. In the top-right corner, click the **Publish** dropdown and select **Publish agent**.
+2. A dialog titled **"Make your agent production-ready"** will appear, showing:
+   - **Publish target version** (e.g., `v2`)
+   - **Last saved** timestamp
+3. Click **Publish**.
+4. On the **"Agent published successfully!"** dialog, note the two endpoints:
+   - **Activity Protocol endpoint** — for bot-style interactions
+   - **Responses API endpoint** — for REST API calls
+5. Click **Close** (we'll explore the Teams publishing next).
 
 > [!NOTE]
 > Publishing creates a **production-ready endpoint** for the agent with its own identity and authentication. The development version of the agent continues to exist in the project for iteration.
 
 **✅ Expected result**
 
-The agent shows a "Published" status with an endpoint URL.
+The success dialog showing the agent application name, version, and both endpoint URLs.
 
 ![Agent Published](./images/agent-published.png)
 
-### Task 5: Review the Published Agent's Identity in Entra
+#### Step 3: Publish to Teams and Microsoft 365 Copilot (Optional)
 
-This is the key identity moment — let's see what happened in Entra ID after publishing.
+You can also publish your agent to **Microsoft 365 Copilot and Teams**, making it available as a conversational app.
 
-1. Return to [entra.microsoft.com](https://entra.microsoft.com) → **Identity** → **Applications** → **Enterprise applications**.
-2. Search for your published agent name (e.g., "Contoso Tires Advisor" or similar).
-3. You should find a **new service principal** — this is the published agent's **dedicated identity**.
-4. Open this service principal and review:
+1. Click the **Publish** dropdown again and select **Publish to Teams and Microsoft 365 Copilot**.
+2. In the **"Teams and Microsoft 365 Copilot"** dialog, review section **① Prepare your agent for publishing**:
+   - **Principal ID of the agent identity** — this is the dedicated service principal created when you published (you'll inspect this in Task 5)
+   - **Tenant ID** — your Entra tenant
+   - **Azure Bot Services** — if none exist, click **Create a Bot Service** to create one. Once created, select it from the dropdown.
+3. Expand **Edit agent details** and fill in the required fields:
 
-| Field | Project Identity (Task 1) | Published Agent Identity (New) |
-|-------|--------------------------|-------------------------------|
-| **Display name** | AI Foundry project name | Published agent name |
-| **Type** | Managed Identity | Application |
-| **Scope** | Shared by all agents in project | Dedicated to this published agent |
-| **Permissions** | Broad project-level access | Can be restricted to specific resources |
+| Field | Value |
+|-------|-------|
+| **Name** | `ContosoTiresAdvisor` |
+| **Version** | `1.0.0` |
+| **Short description** | `Maintenance advisor for Contoso Tires factory equipment` |
+| **Full description** | `Helps technicians diagnose faults and plan repairs for factory equipment` |
+| **Developer name** | Your name or `Contoso Tires` |
+| **Website** | Any valid URL (e.g., `https://contoso.com`) |
+| **Terms of use URL** | Any valid URL |
+| **Privacy statement URL** | Any valid URL |
 
-5. Compare the two service principals:
-   - The **project identity** serves all development agents — broad permissions.
-   - The **published agent identity** is dedicated — you can grant it only what this specific agent needs.
-
-**💬 This is the identity journey:**
-1. During development → agent uses the **project's managed identity** (shared)
-2. After publishing → agent receives a **dedicated service principal** (isolated)
-3. Optionally → configure **OBO** so the agent acts under the **end user's identity** (delegated)
+4. Click **Prepare agent** to validate the configuration.
+5. In section **② Publish your agent to Microsoft 365 Copilot and Microsoft Teams**, select **Individual scope** (best for personal testing — no admin approval required).
+6. Click **Submit**.
 
 > [!TIP]
-> In production, review the published agent's identity carefully. Grant it the minimum IAM roles needed for its specific tools and connections. This ensures that even if one agent is compromised, it can't access resources outside its scope.
+> If you or your colleagues have a **Microsoft 365 Copilot license**, the agent will appear in the Microsoft 365 Copilot agent store under **All agents → Your agents**, and in Teams under **Apps → Manage your apps**.
 
 **✅ Expected result**
 
-Two service principals visible in Entra — the project-level managed identity and the published agent's dedicated identity.
+A success message: *"Agent published successfully to Microsoft 365 Copilot and Teams"*.
 
-![Entra Published Identity](./images/entra-published-identity.png)
+![Agent Published to Teams](./images/agent-published-teams.png)
+
+### Task 5: Review Agent Identities in Entra Agent ID
+
+Microsoft Entra now has a dedicated **Agent ID** blade (Preview) for managing agent identities. Let's use it to see all agent identities — including the one just created by publishing.
+
+1. Go to [entra.microsoft.com](https://entra.microsoft.com).
+2. In the left sidebar, click **Agent ID (Preview)** (under **Entra ID**).
+3. The **Overview** page shows a summary of all agents in your tenant — total count, recently created, active, and a breakdown by type (agent identities with/without users, agents with service principals).
+4. Click **All agent identities (Preview)** in the left sidebar.
+5. You should see a list of all agent identities, including:
+   - **Project-level identities** — names like `msagthack-aifoundry-.../projects/msagthack-aiproject-...` (these are the shared project managed identities from Task 1)
+   - **Published agent identities** — names like `...-ContosoTiresAdvisor-AgentIdentity` (the dedicated identity created when you published in Task 4)
+6. Click on your **ContosoTiresAdvisor** agent identity to inspect it:
+   - **Status**: Active
+   - **Object ID**: This matches the Principal ID from the **Publish → View details** dialog
+   - **Owners**: The user who published the agent
+   - **Blueprint ID**: Links to the agent blueprint (the agent definition)
+   - **Created on**: The date you published
+7. In the left sidebar, click **Owners and sponsors (Preview)** to see who has management rights over this agent identity.
+8. Click **Agent identity's access (Preview)** to view any permissions and Entra roles granted to this identity.
+
+**💬 What to observe:**
+- The Agent ID blade gives you a **centralized view** of all agent identities across your tenant — much easier than searching Enterprise apps.
+- Each published agent gets its own identity entry, separate from the project-level identity. This is the identity isolation that enables per-agent least-privilege access.
+- The **Owners** field shows who is responsible for this agent — important for governance and accountability.
+- **Agent identity's access** shows 0 permissions and 0 Entra roles initially — an admin would need to grant specific roles for the published agent to access resources independently.
+
+**💬 This is the identity journey:**
+1. During development → agent uses the **project's managed identity** (shared by all agents)
+2. After publishing → agent receives a **dedicated agent identity** (isolated, visible in Agent ID blade)
+3. Optionally → configure **Agent On-Behalf-Of (OBO)** so the agent acts under the **end user's identity** ([learn more](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/agent-on-behalf-of-oauth-flow))
+
+**✅ Expected result**
+
+The Agent ID blade showing all agent identities, with your published ContosoTiresAdvisor identity visible.
+
+![Entra Agent ID](./images/entra-agent-id.png)
 
 ### Task 6: Manage Published Versions
 
@@ -298,12 +371,9 @@ A successful response from the published agent endpoint with manufacturing-speci
 
 You've traced the complete identity journey of a Foundry agent:
 
-**Part A — Identity & Security:**
 - Found the project's managed identity in Entra ID and understood its shared scope
 - Traced IAM role assignments from the managed identity to dependent resources
 - Reviewed connection-level access control and tool security
-
-**Part B — Publishing & Identity:**
 - Published an agent and observed the creation of a dedicated service principal
 - Compared project-level vs. published agent identities in Entra
 - Managed published versions with rollback capability
