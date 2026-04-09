@@ -55,6 +55,7 @@ Fine-tuning creates a **custom version** of a base model by training it on your 
 | **Prompt engineering** | General tasks, quick iteration | *"You are a manufacturing maintenance expert…"* system prompt |
 | **RAG (Retrieval-Augmented Generation)** | Access to specific documents at query time | Retrieving the tire curing press troubleshooting guide on demand |
 | **Fine-tuning** | Consistent domain-specific behavior baked in | Model always responds with Contoso-specific thresholds, part numbers, and procedures without needing retrieval |
+| **Memory** | Persistent personalization across conversations | Agent remembers that a technician specializes in curing presses and adjusts responses accordingly |
 
 ### Customization Methods
 
@@ -79,11 +80,12 @@ It's also important to understand what fine-tuning **doesn't** do. A base LLM is
 
 This is why fine-tuning works best for **stable patterns** like response style, threshold interpretation, standard procedures, and recurring terminology. For **fast-changing facts**, such as current inventory, newly added machines, or the latest maintenance advisories, retrieval is usually the better fit.
 
-**How to reason about training data vs. RAG/tools:**
+**How to reason about training data vs. RAG/tools/memory:**
 
 - Put examples in **training data** when you want the model's default behavior to stay consistent over time: response style, diagnostic flow, fault taxonomy, threshold interpretation, and standard safety procedures.
 - Use **RAG** for reference material that may evolve but still benefits from document grounding at runtime: manuals, policies, troubleshooting guides, and approved procedures.
 - Use **tools** for live operational state that should come from a current source of truth: inventory levels, supplier lead times, maintenance windows, technician availability, work orders, and scheduler scoring logic.
+- Use **[memory](https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/what-is-memory?tabs=conversational-agent)** for user-specific or session-specific context that should persist across conversations: a technician's role, their assigned machines, preferences, and prior diagnostic history. Memory is managed per-agent and builds up over time through interactions — see [Portal Lab 2](../portal-lab-2/README.md) for a hands-on walkthrough.
 - If a fact becoming stale would lead to a bad operational decision, it should be retrieved or looked up at runtime rather than baked into the fine-tuned model.
 
 ### Pre-Deployed Models
