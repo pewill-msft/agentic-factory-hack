@@ -138,17 +138,9 @@ Here's an example entry:
 
 First, download the training data file to your local machine so you can upload it to the Foundry Portal:
 
-**Option A — Download the single file:**
-
 1. Navigate to [`admin-lab-1/data/training-data.jsonl`](./data/training-data.jsonl) in the GitHub repository.
 2. Click the **Download raw file** button (↓ icon) in the top-right of the file view.
 3. Save it somewhere you can find it (e.g., your Downloads folder).
-
-**Option B — Download the whole repo as a ZIP:**
-
-1. Navigate to the repository's main page on GitHub.
-2. Click the green **Code** button → **Download ZIP**.
-3. Extract the ZIP and find the file under `admin-lab-1/data/training-data.jsonl`.
 
 Now create the fine-tuning job:
 
@@ -166,15 +158,15 @@ Now create the fine-tuning job:
 | **Validation data** | Leave collapsed (optional for this lab) |
 | **Suffix** | Enter a descriptive suffix, e.g., `contoso-tires-maintenance` — this is appended to the model name to identify your fine-tuned version |
 
-5. Optionally toggle **Automatically deploy model after job completion** if you want the fine-tuned model deployed as soon as training succeeds. For this lab you can leave it off and deploy manually in Task 8.
+5. Leave **Automatically deploy model after job completion** toggled **off**. You'll deploy the model manually in Task 7.
 6. Expand **Additional configuration** and set:
 
 | Setting | Value |
 |---------|-------|
 | **Seed** | Leave as `Random` (controls reproducibility; a fixed integer gives deterministic results across runs) |
-| **Batch size** | Leave on `Default` (or select `Custom` and pick a value between 1–32) |
+| **Batch size** | Leave on `Default` |
 | **Number of epochs** | Select `Custom` and enter `1` (number of passes through the training data; range 1–10. We use `1` in this lab to keep training time shorter) |
-| **Learning rate multiplier** | Leave on `Default` (or select `Custom` and enter a value between 0.01–10.00; `1.0` is a safe starting point) |
+| **Learning rate multiplier** | Leave on `Default` |
 
 7. Click **Submit** to launch the fine-tuning job.
 
@@ -182,22 +174,22 @@ Now create the fine-tuning job:
 
 The fine-tuning job appears in the list with status "Running" or "Queued".
 
-![Fine-Tuning Job Created](./images/fine-tuning-job-created.png)
-
 > [!NOTE]
-> Fine-tuning typically takes **30–45 minutes** in this lab depending on queue time, data size, and selected hyperparameters. It can also take a few minutes for the job to get into state `running`. While the job runs, continue with the remaining tasks in this lab and come back to deploy the fine-tuned model later.
+> Fine-tuning typically takes **30–45 minutes** depending on queue time and data size, and the job can sit in "Queued" state for several minutes before it starts running. The estimated finish time shown in the portal may underestimate — plan for the full 30–45 minutes. **Move on to Task 4 now** and come back periodically to check progress.
 
 ### Task 3: Monitor Training Progress
 
+This task is something you'll **check back on periodically** while working through the remaining tasks. There's no need to wait here — just revisit the fine-tuning job page every 10–15 minutes to track progress.
+
 1. Click on your fine-tuning job to open its detail page.
-2. While the job is running, you can monitor:
+2. Check the **Logs** tab to see the job's event history — this shows timestamped status messages such as "Job enqueued", "Preprocessing completed", "Finetuning started", etc. This is helpful when the job appears stuck or metrics haven't appeared yet.
+3. On the **Monitor** tab, you can track:
    - **Current train loss** — a measure of how wrong the model is on the current training batch; lower is better and it should generally decrease over time
    - **Current train mean token accuracy** — the percentage of tokens in the current training batch that the model predicted correctly; higher is better and it should generally increase over time
    - **Job status** — Queued → Running → Succeeded
-   - **Estimated finish time**
 
 > [!NOTE]
-> It can take a few minutes after the job enters `Running` before the training metrics appear. During that time, values such as current train loss or token accuracy may show as blank (`--`).
+> It can take **several minutes** after the job enters `Running` before any training metrics appear. During that time, values such as current train loss or token accuracy may show as blank (`--`). This is normal — check the **Logs** tab to confirm the job is progressing.
 
 **💬 What to look for in the training metrics:**
 
@@ -219,7 +211,7 @@ A completed fine-tuning job showing the training metrics and a successful comple
 
 ### Task 4: Inspect Deployed Model Versions
 
-While the fine-tuning job runs, switch to the model deployment view and review the currently deployed versions.
+While the fine-tuning job runs, let's review the currently deployed model versions.
 
 1. Open the **Foundry Portal** at [ai.azure.com](https://ai.azure.com) if you aren't already there.
 2. Click **Operate** in the top navigation bar, then select **Assets** → **Models** in the left sidebar.
@@ -265,52 +257,84 @@ The deployment detail page showing deployment type, provisioning state, version 
 - Pinning gives you control but requires monitoring deprecation timelines.
 - A good practice is to use a controlled policy for production deployments and a more automatic policy on a separate test deployment for validation.
 
-### Task 6: Review the Edit Deployment Experience
+### Task 6: Change the Version Upgrade Policy
 
-1. While viewing the deployment details page, click **Edit**.
-2. In the **Update deployment** panel, review these fields:
-   - **Deployment type**
-   - **Model version**
-   - **Model version upgrade policy**
-   - **Guardrails**
-3. Open the **Model version upgrade policy** dropdown and review the available options:
-   - **Upgrade once new default version becomes available**
-   - **Once the current version expires**
-   - **Opt out of automatic model version upgrades**
-4. Compare the currently selected policy with the other available choices.
-5. If you are only reviewing the settings for learning purposes, click **Cancel** to leave the deployment unchanged.
+In this task you'll edit the `gpt-4.1` deployment to understand the available settings and pin it to its current version — the recommended approach for production workloads.
+
+1. While viewing the `gpt-4.1` deployment details page, click **Edit**.
+2. In the **Update deployment** panel, review the available fields.
+
+#### Deployment types
+
+The **Deployment type** dropdown controls where and how inference requests are processed. The deployment types you may see include:
+
+| Deployment Type | Description |
+|----------------|-------------|
+| **Global Standard** | Pay-per-token. Requests are routed globally for the highest available rate limits. Data storage stays in your resource's region. |
+| **Data Zone Standard** | Pay-per-token. Requests stay within the geographic data zone (e.g., US, EU) for data residency requirements. |
+| **Standard** | Pay-per-token. Requests are processed in the region where the resource is deployed. |
+| **Global Provisioned Throughput** | Reserved capacity billed per provisioned throughput unit (PTU). Routed globally for best availability. |
+| **Data Zone Provisioned Throughput** | Reserved PTU capacity within a geographic data zone. |
+
+> [!TIP]
+> For this lab, leave the deployment type as **Global Standard**. In production, choose based on your data residency requirements and whether you need guaranteed throughput (provisioned) or flexible pay-per-token (standard). See [Deployment types](https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/deployment-types) for details.
+
+#### Change the upgrade policy
+
+3. Expand **Model version settings** and note the current **Model version** (e.g., `2025-04-14`).
+4. Open the **Model version upgrade policy** dropdown. You'll see three options:
+   - **Upgrade once new default version becomes available** — the deployment auto-upgrades when a new default version is released
+   - **Once the current version expires** — the deployment stays on the current version and only upgrades when it reaches expiry
+   - **Opt out of automatic model version upgrades** — the deployment stays on the current version until you manually change it
+5. Select **Opt out of automatic model version upgrades**.
+
+#### Adjust the rate limit
+
+6. Scroll down to the **Tokens per Minute Rate Limit** slider. This controls the maximum number of tokens the deployment can process per minute. The slider shows your current allocation out of the total quota available for your subscription and region.
+7. Lower the rate limit to **30,000** tokens per minute. In a shared workshop environment with multiple deployments, it's good practice to avoid allocating more capacity than you need — this leaves room for other deployments (including the fine-tuned model you'll deploy in Task 7).
+
+> [!TIP]
+> In production, set rate limits based on expected traffic. Over-allocating TPM on one deployment can starve other deployments sharing the same quota. Monitor actual usage and adjust as needed.
+
+8. Click **Save** to apply both changes.
+
+> [!IMPORTANT]
+> For production agents like Contoso Tires' fault diagnosis agents, opting out of automatic upgrades is the recommended practice. A model version change could alter how the model interprets fault thresholds or diagnostic procedures. By pinning the version, you can test new versions on a separate deployment before upgrading production.
+
+**✅ Expected result**
+
+The deployment's version upgrade policy now shows **Opt out of automatic model version upgrades**. The model version remains unchanged — you've only changed when (and whether) it auto-upgrades.
 
 > [!NOTE]
-> In many workshop environments, there may not be a newer version available to upgrade to right now. That's fine. The important part is understanding where this setting lives, what each option means, and how you would configure it in a real production environment.
+> When you opt out, you're responsible for monitoring deprecation timelines and upgrading before the retirement date. A good practice is to keep a separate test deployment with automatic upgrades enabled so you can validate new versions early.
 
 ### Task 7: Deploy and Test the Fine-Tuned Model
 
-Once the fine-tuning job completes (or if a pre-fine-tuned model has been provided):
+Once the fine-tuning job from Task 2 has completed, come back here to deploy and test the model.
 
-1. From the completed fine-tuning job page, click **Deploy**.
-2. Give the deployment a name, e.g., `contoso-tires-ft`.
-3. Configure rate limits and set it **500** and click **Deploy**.
-4. Once deployed, go to **Build** → **Playgrounds** → **Chat playground**.
-5. Select your new fine-tuned deployment (`contoso-tires-ft`).
-6. Click **Compare models** in the upper-right corner of the playground.
-7. In the comparison panel, add the base deployment **`gpt-4o-mini`** so you can see both models side by side.
-8. In the **Setup** tab, make sure both sides use the same instructions.
-9. Use this test setup for the comparison:
-
-   **System message:**
+1. In the Foundry Portal, click **Build** in the top navigation bar.
+2. Select **Fine-tune** in the left sidebar.
+3. Click on your completed fine-tuning job — its status should show **Succeeded**. If it still shows **Running**, continue with the other tasks and check back in a few minutes.
+4. Click **Deploy**.
+5. Give the deployment a name, e.g., `contoso-tires-ft`, and configure the **Tokens per Minute Rate Limit** to **50,000**. Click **Deploy**.
+6. Once deployed, select the **Playground** tab.
+7. Click **Compare models** in the upper-right corner of the playground.
+8. In the comparison panel, add the base deployment **`gpt-4o-mini`** so you can see both models side by side.
+9. In the **Setup** tab, make sure both sides use the same instructions.
+10. Select **Setup** and use this prompt:
 
    ```
    You are a manufacturing maintenance expert at Contoso Tires. Provide concise, accurate diagnostic and maintenance guidance. Reference specific thresholds, part numbers, and procedures when applicable.
    ```
 
-   **Prompt:**
-
+11. In the **Chat** tab, send the following prompt once and compare the two responses side by side.
 > What are the most common causes of excessive drum vibration in a tire building machine, and what maintenance steps should be taken?
 
-10. In the **Chat** tab, send the prompt once and compare the two responses side by side.
+> [!NOTE]
+> It might take a few minutes for the fine-tuned model to get ready.
 
 > [!TIP]
-> If **Sync chat input and setup** is available in the playground, leave it enabled so the same instructions and prompts are applied to both models.
+> With **Sync chat input and setup** enabled in setup the same instructions and prompts are applied to both models.
 
 **💬 What to compare:**
 
@@ -321,7 +345,7 @@ Once the fine-tuning job completes (or if a pre-fine-tuned model has been provid
 | Uses standard fault type names | No | Yes (building_drum_vibration) |
 | Response style | General manufacturing advice | Contoso Tires-specific procedures |
 
-11. Try a few more prompts to see the difference:
+12. Try a few more prompts to see the difference:
 
 > Machine TC-100 curing cycle is taking 16 minutes. What should I check?
 

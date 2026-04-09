@@ -141,6 +141,11 @@ Always reference specific thresholds, part numbers, and estimated repair times w
 > [!NOTE]
 > It may take **2–5 minutes** for trace data to appear in the dashboards after you send your conversations. This is normal — telemetry is batched and processed asynchronously.
 
+> [!IMPORTANT]
+> Notice that this agent relies **entirely on its system prompt and the model's general training data** — it has no access to real documents, databases, or APIs. While the thresholds we hardcoded in the instructions will be used correctly, the model will **fabricate** details it doesn't actually know, such as specific part numbers, exact repair times, and detailed procedures. This is expected for this lab — the goal here is to generate trace data for observability, not to build an accurate agent.
+>
+> In [Portal Lab 3](../portal-lab-3/README.md) you'll see how attaching **tools** (file search, code interpreter) gives the agent access to real documents. In [Portal Lab 4](../portal-lab-4/README.md) you'll use **Foundry IQ** to ground the agent in structured knowledge. Those approaches produce significantly more reliable answers than instructions alone.
+
 **✅ Expected result**
 
 The agent responds to each prompt with manufacturing-specific guidance. Each conversation generates trace data.
@@ -198,7 +203,7 @@ The monitoring dashboard showing operational metrics such as total token usage, 
 
 An individual trace showing the message flow: user message → LLM call → assistant response, with latency and token counts.
 
-![Agent Trace Detail](./images/agent-trace-detail.png)
+![Agent Trace Detail](./images/agent-trace-details.png)
 
 ### Task 4: Open in Application Insights
 
@@ -245,9 +250,11 @@ Application Insights showing the dashboard panels and a filtered trace list from
 
 Now that you've confirmed telemetry is arriving, use **Logs** to inspect the raw tables behind the dashboard.
 
-1. In Application Insights, click **Logs** in the left sidebar.
+1. In Application Insights, click **Logs** in the left sidebar (under **Monitoring**).
 2. If the **Queries hub** dialog opens, close it using the **X** in the upper-right corner.
-3. If the editor opens in **Simple mode**, keep it there first so you can inspect the available tables.
+3. If the editor opens in **Simple mode**, keep it there first so you can inspect the available tables. You can switch between **Simple mode** and **KQL mode** using the dropdown in the upper-right corner of the query editor.
+
+![Logs Simple and KQL Mode](./images/logs-simple-kql-mode.png)
 4. In **Simple mode**, select a telemetry table and preview recent rows:
    - Start with **customEvents**.
    - Then inspect **dependencies**.
@@ -266,28 +273,28 @@ union isfuzzy=true traces, requests, dependencies, customEvents, exceptions
    - **itemType** tells you which table each row came from.
    - **customDimensions** often contains AI-specific metadata.
    - **customMeasurements** may contain token usage values.
-8. Now generate a chart so you can visualize recent telemetry activity over time:
+8. Now generate a chart to see how telemetry is distributed across tables:
 
 ```kusto
 union isfuzzy=true customEvents, dependencies
 | where timestamp > ago(2h)
-| summarize telemetryCount = count() by bin(timestamp, 5m), itemType
-| render timechart
+| summarize telemetryCount = count() by itemType
+| render barchart
 ```
 
 9. Review the chart:
-   - Each series represents a telemetry table such as **customEvents** or **dependencies**.
-   - Spikes should line up with the time when you sent your test prompts.
-   - If one table stays flat while another rises, that tells you where the agent is actually writing telemetry.
+   - Each bar represents a telemetry table — **customEvent** or **dependency**.
+   - The bar height shows how many telemetry items arrived from each table.
+   - This tells you at a glance where the agent is writing telemetry. For example, you might see more rows in **dependencies** (one per LLM call) than in **customEvents**.
 10. Use the query results and chart to confirm:
    - recent agent activity is arriving in the workspace
-   - the operation names line up with your test runs
-   - the telemetry pattern over time matches your test activity
+   - telemetry is landing in the expected tables
+   - the row counts are consistent with the number of test prompts you sent
 
 
 **✅ Expected result**
 
-The **Logs** experience opens successfully, you dismiss the **Queries hub**, switch from **Simple mode** to **KQL mode**, inspect recent telemetry rows, and generate a time chart showing activity from **customEvents** and **dependencies**.
+The **Logs** experience opens successfully, you dismiss the **Queries hub**, switch from **Simple mode** to **KQL mode**, inspect recent telemetry rows, and generate a bar chart showing telemetry counts per table type.
 
 ### Task 6: Set Up an Evaluation
 
@@ -314,7 +321,7 @@ Evaluations measure the **quality** of agent responses using built-in metrics. L
    - Click **Confirm** to create the synthetic dataset.
    - After the dataset is generated, return to the wizard and continue.
    - Click **Next**.
-   - The **Existing dataset** option is available, but it is the manual path and is not used in this lab.
+ 
 
 7. In **Criteria**:
    - The wizard may auto-suggest a larger set of evaluators across **Agents**, **Quality**, and **Safety**.
@@ -328,8 +335,9 @@ Evaluations measure the **quality** of agent responses using built-in metrics. L
    - In a real-world evaluation pipeline, teams usually keep a broader evaluator set such as **TaskAdherence**, **IntentResolution**, **Relevance**, **Coherence**, **Fluency**, and appropriate **Safety** checks. That gives better coverage, but it also increases evaluation time and makes the first pass harder to interpret.
    - Click **Next**.
 8. In **Review**:
+   - Set the **Evaluation name** to `maintenance-advisor-baseline`.
    - Confirm the selected agent, version, data source, and criteria.
-   - Submit the evaluation.
+   - Click **Submit**.
 
 > [!NOTE]
 > Even with only **TaskCompletion** and **Groundedness** selected, evaluation runs can still take around **10 minutes** depending on region, capacity, and service load. This lab intentionally uses **30 rows** so you have enough results to reason about patterns instead of drawing conclusions from only a few samples.

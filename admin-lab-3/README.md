@@ -36,28 +36,18 @@ Foundry Control Plane is the unified management layer for agents, models, tools,
 
 ### The Organizational Hierarchy
 
-Azure AI Foundry organizes resources in a hub-and-spoke model:
+Azure AI Foundry now uses a simplified organizational model. A **Foundry resource** is the top-level container that holds one or more **projects**. Each project is a workspace for a team or use case, with its own model deployments, agents, tools, and connections. Security, governance, and shared configuration are managed at the Foundry resource level.
 
-```
-Azure Subscription
-└── Resource Group
-    └── AI Foundry Hub
-        ├── Project A (Contoso Tires Maintenance)
-        │   ├── Model deployments (gpt-4.1, gpt-4o-mini, ...)
-        │   ├── Agents (Maintenance Advisor, ...)
-        │   └── Connections (Storage, AI Search, ...)
-        ├── Project B (could be another team/use case)
-        └── Shared resources (compute, storage, quotas)
-```
+![Foundry Resource Hierarchy](./images/foundry-resource-hierarchy.png)
 
 | Level | Who Manages It | What They See |
 |-------|---------------|---------------|
 | **Subscription** | IT / Cloud admin | Cost, compliance, policies |
-| **Hub** | Platform admin / Product owner | Shared resources, quotas, cross-project metrics |
+| **Foundry resource** | Platform admin / Product owner | Projects, shared configuration, quotas, cross-project metrics, security & governance |
 | **Project** | Developer / Team lead | Models, agents, tools, evaluations |
 
 > [!NOTE]
-> In this workshop you likely have one hub with one project. In production environments, a hub typically serves multiple projects for different teams or use cases. Foundry Control Plane is designed for that multi-project reality.
+> In this workshop you likely have one Foundry resource with one project. In production environments, a Foundry resource typically contains multiple projects for different teams or use cases. Foundry Control Plane is designed for that multi-project reality. See [Create a project](https://learn.microsoft.com/en-us/azure/foundry/how-to/create-projects?tabs=foundry) for more details.
 
 ### The Operate Experience and Its Panes
 

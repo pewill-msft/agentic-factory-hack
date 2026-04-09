@@ -27,16 +27,16 @@ This capstone lab ties together identity, security, and publishing. You'll trace
 An agent's identity determines **what resources it can access** and **under whose authority it acts**. This changes as the agent moves from development to production:
 
 ```
-Development (Unpublished)              Production (Published)
-┌─────────────────────┐                ┌─────────────────────┐
-│  Agent A             │                │  Agent A (published) │
-│  Agent B             │  ──Publish──►  │                     │
-│  Agent C             │                │  Dedicated identity  │
-│                      │                │  (new service        │
-│  Shared project      │                │   principal in Entra)│
-│  managed identity    │                └─────────────────────┘
-│  (one SP for all)    │
-└─────────────────────┘
+Development (Unpublished)                Production (Published)
+┌──────────────────────────┐             ┌──────────────────────────┐
+│  Agent A                 │             │  Agent A (published)     │
+│  Agent B                 │ ─Publish──► │                          │
+│  Agent C                 │             │  Dedicated identity      │
+│                          │             │  (new service principal  │
+│  Shared project          │             │   in Entra)              │
+│  managed identity        │             └──────────────────────────┘
+│  (one SP for all)        │
+└──────────────────────────┘
 ```
 
 | Phase | Identity Used | Who Controls Access |
@@ -71,36 +71,38 @@ Development (Unpublished)              Production (Published)
 Every AI Foundry project has a **system-assigned managed identity** — this is the service principal that agents use to authenticate when calling tools and accessing resources during development.
 
 1. Open the **Microsoft Entra admin center** at [entra.microsoft.com](https://entra.microsoft.com) in your browser.
-2. In the left sidebar, expand **Entra ID** and click **Enterprise apps** (under **Manage**).
-3. In the search bar, type the prefix of your AI Foundry project name or resource group (e.g., `msag`).
-   - **Important**: If the filter bar shows **Application type == Enterprise Applications**, remove that filter by clicking the **×** next to it. Managed identities are not Enterprise Applications, so the filter hides them.
-   - You should see multiple entries corresponding to your Foundry resources (AI project, connections, etc.).
-4. Click on the service principal that matches your AI Foundry project name to open its details.
-5. On the **Overview** page, review the **Properties** section:
+2. In the left sidebar, click **Agent ID (Preview)** (under **Entra ID**).
+3. Click **All agent identities (Preview)** in the left sidebar.
+4. In the search bar, type the prefix of your AI Foundry project name (e.g., `msagthack`).
+   - You should see entries with names like `msagthack-aifoundry-.../projects/msagthack-aiproject-...` — these are the **project-level managed identities** shared by all agents in each project.
+   - You may also see published agent identities (e.g., names ending in `-AgentIdentity`) — we'll explore those in Task 5.
+5. Click on the identity that matches your AI Foundry project to open its details. Review:
 
 | Field | What It Shows |
 |-------|-------------|
-| **Name** | The name of your AI Foundry resource (e.g., `msagthack-aifoundry-2u7se...`) |
-| **Application ID** | The unique client ID for this identity |
+| **Name** | The project identity path (e.g., `msagthack-aifoundry-.../projects/msagthack-aiproject-...`) |
 | **Object ID** | The directory object ID (used in IAM role assignments) |
+| **Status** | Should be **Active** |
+| **Created on** | When the project was provisioned |
 
-6. Explore the left sidebar sections — **Properties**, **Owners**, **Permissions**, **Sign-in logs** — to understand the identity's configuration and activity.
+6. In the left sidebar of the identity, explore **Owners and sponsors (Preview)** and **Agent identity's access (Preview)** to understand who manages this identity and what permissions it has.
 
 > [!TIP]
-> The AI Foundry project's managed identity name starts with **`msagthack-aifoundry-`** followed by a random suffix. You can find the exact name in the **Foundry Portal** under your project settings, or in the **Azure portal** by navigating to your resource group and looking for the AI Foundry resource name.
+> The **Agent ID blade** is the easiest way to find Foundry agent identities. It shows both project-level and published agent identities in one place — no need to search through Enterprise apps or remove filters. You can also find the project's managed identity in the **Azure portal** by navigating to your **AI Foundry resource** → **Identity** (left sidebar) → **System assigned** tab.
 
 **💬 What to observe:**
-- This single service principal is used by **all agents** in the project. When Agent A calls a tool that accesses Cosmos DB, it authenticates as this identity.
+- This single project identity is used by **all agents** in the project during development. When Agent A calls a tool that accesses Cosmos DB, it authenticates as this identity.
 - The Object ID you see here corresponds to the principal entries in IAM role assignments — you'll verify this in Task 2.
+- Notice that you can already see the distinction between **project identities** (shared) and **published agent identities** (dedicated) — this is the identity journey we'll explore throughout the lab.
 
 **✅ Expected result**
 
-The Entra enterprise application page showing the managed identity for your AI Foundry project.
+The Agent ID blade showing your project's managed identity alongside any published agent identities.
 
-![Entra Managed Identity](./images/entra-managed-identity.png)
+![Entra Agent ID](./images/entra-agent-id-blade.png)
 
 > [!TIP]
-> If you can't find the managed identity, try the Azure portal instead: navigate to your **AI Foundry resource** → **Identity** (left sidebar) → **System assigned** tab. This shows the Object ID, which you can then look up in Entra.
+> If you prefer the classic approach, you can also find the managed identity via **Enterprise apps**: expand **Entra ID** → **Enterprise apps**, remove the **Application type** filter, and search for your project name. But the Agent ID blade is purpose-built for agent identities and much more convenient.
 
 ### Task 2: Review IAM Role Assignments
 
@@ -223,7 +225,18 @@ Let's create a simple agent, publish it, and observe what happens to its identit
 5. Click **Close** (we'll explore the Teams publishing next).
 
 > [!NOTE]
-> Publishing creates a **production-ready endpoint** for the agent with its own identity and authentication. The development version of the agent continues to exist in the project for iteration.
+> Publishing does more than just expose an endpoint — it creates an **Agent Application** Azure resource that wraps your agent version with:
+> - A **stable endpoint URL** that stays the same even as you roll out new agent versions
+> - A **dedicated Entra agent identity**, separate from the project's shared identity
+> - Its own **RBAC scope**, so you can control access independently
+> - **Azure Policy integration**, since the Agent Application is a full ARM resource
+>
+> The development version of the agent continues to exist in the project for iteration.
+
+> [!IMPORTANT]
+> **Permissions for callers**: API key authentication is **not supported** for invoking published Agent Applications. Callers must authenticate with Microsoft Entra ID and have the **Azure AI User** role (or a custom role with the `/applications/invoke/action` permission) assigned on the **Agent Application resource** in Entra. Without this role, callers will receive authorization errors when trying to invoke the published agent.
+>
+> **Permissions for tools**: Because the identity changes at publish time, RBAC permissions **don't transfer automatically**. You must reassign roles to the new agent identity for any resources the agent accesses (e.g., Cosmos DB, Storage). If you skip this step, tool calls that worked during development will fail with authorization errors.
 
 **✅ Expected result**
 
@@ -264,19 +277,16 @@ You can also publish your agent to **Microsoft 365 Copilot and Teams**, making i
 
 A success message: *"Agent published successfully to Microsoft 365 Copilot and Teams"*.
 
-![Agent Published to Teams](./images/agent-published-teams.png)
+![Agent Published to Teams](./images/agent-published-to-teams.png)
 
-### Task 5: Review Agent Identities in Entra Agent ID
+### Task 5: Review the Published Agent Identity in Entra Agent ID
 
-Microsoft Entra now has a dedicated **Agent ID** blade (Preview) for managing agent identities. Let's use it to see all agent identities — including the one just created by publishing.
+Return to the **Agent ID blade** you used in Task 1. Now that you've published an agent, there should be a **new dedicated identity** for it.
 
 1. Go to [entra.microsoft.com](https://entra.microsoft.com).
-2. In the left sidebar, click **Agent ID (Preview)** (under **Entra ID**).
-3. The **Overview** page shows a summary of all agents in your tenant — total count, recently created, active, and a breakdown by type (agent identities with/without users, agents with service principals).
-4. Click **All agent identities (Preview)** in the left sidebar.
-5. You should see a list of all agent identities, including:
-   - **Project-level identities** — names like `msagthack-aifoundry-.../projects/msagthack-aiproject-...` (these are the shared project managed identities from Task 1)
-   - **Published agent identities** — names like `...-ContosoTiresAdvisor-AgentIdentity` (the dedicated identity created when you published in Task 4)
+2. Navigate to **Agent ID (Preview)** → **All agent identities (Preview)** (the same blade you used in Task 1).
+3. Refresh the list. You should now see a **new entry** alongside the project-level identities you saw earlier:
+   - **Published agent identity** — name like `...-ContosoTiresAdvisor-AgentIdentity` (the dedicated identity created when you published in Task 4)
 6. Click on your **ContosoTiresAdvisor** agent identity to inspect it:
    - **Status**: Active
    - **Object ID**: This matches the Principal ID from the **Publish → View details** dialog
@@ -287,7 +297,7 @@ Microsoft Entra now has a dedicated **Agent ID** blade (Preview) for managing ag
 8. Click **Agent identity's access (Preview)** to view any permissions and Entra roles granted to this identity.
 
 **💬 What to observe:**
-- The Agent ID blade gives you a **centralized view** of all agent identities across your tenant — much easier than searching Enterprise apps.
+- Compare the list now to what you saw in Task 1 — the **new published agent identity** is the key difference. Publishing created a dedicated identity separate from the shared project identity.
 - Each published agent gets its own identity entry, separate from the project-level identity. This is the identity isolation that enables per-agent least-privilege access.
 - The **Owners** field shows who is responsible for this agent — important for governance and accountability.
 - **Agent identity's access** shows 0 permissions and 0 Entra roles initially — an admin would need to grant specific roles for the published agent to access resources independently.
@@ -306,7 +316,7 @@ The Agent ID blade showing all agent identities, with your published ContosoTire
 ### Task 6: Manage Published Versions
 
 1. Back in the **Foundry Portal**, navigate to your published agent.
-2. Look for a **Versions** or **Publishing history** section.
+2. Select **Publish** then **View details**.
 3. Review the version information:
    - **Version number** — increments with each publish
    - **Published date** — when this version was deployed
@@ -322,45 +332,23 @@ The Agent ID blade showing all agent identities, with your published ContosoTire
 
 The publishing history showing version numbers, dates, and status.
 
-![Published Versions](./images/published-versions.png)
-
-### Task 7: Test the Published Endpoint
-
-Finally, let's invoke the published agent through its production endpoint.
-
-1. From the published agent's page, copy the **endpoint URL**.
-2. Note the **authentication method** — typically an API key or OAuth token.
-3. Test the endpoint using one of these methods:
-
-**Option A — Using the browser/portal test tool** (if available in the published agent's page):
-   - Look for a "Test" or "Try it" button
-   - Send a simple prompt: `What should I check if curing press temperature reads 179°C?`
-
-**Option B — Using curl** (from a terminal or Codespace):
-
-```bash
-curl -X POST "<your-published-endpoint-url>" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <your-api-key>" \
-  -d '{
-    "messages": [
-      {"role": "user", "content": "What should I check if curing press temperature reads 179°C?"}
-    ]
-  }'
-```
-
-4. Verify you get a meaningful response from the published agent.
-
-**✅ Expected result**
-
-A successful response from the published agent endpoint with manufacturing-specific guidance.
-
-![Endpoint Test](./images/endpoint-test.png)
-
-> [!WARNING]
-> The API key for a published agent is a **production credential**. In a real deployment, store it in Azure Key Vault, not in code or environment variables. Rotate keys regularly and monitor for unauthorized usage.
-
 ## 🚀 Go Further
+
+- **Test the published endpoint via CLI**: Invoke your published agent from your Codespace or local terminal using `curl`. First, acquire a token with `az login` and `az account get-access-token --resource https://management.azure.com`. Then call the Responses API endpoint:
+
+  ```bash
+  TOKEN=$(az account get-access-token --resource https://management.azure.com --query accessToken -o tsv)
+
+  curl -X POST "<your-responses-api-endpoint>/responses" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $TOKEN" \
+    -d '{
+      "model": "gpt-4.1",
+      "input": "What should I check if curing press temperature reads 179°C?"
+    }'
+  ```
+
+  Remember: the caller's Entra identity must have the **Azure AI User** role on the Agent Application resource. If you get a 403, check the IAM role assignment on the Agent Application in the Azure portal.
 
 - **On-Behalf-Of (OBO) flow**: Discuss with your team how you'd configure an agent to execute under the end user's identity. This requires a custom Entra app registration with delegated permissions and a consent flow. When would this be necessary? (Answer: when different users should have different data access levels through the same agent.)
 - **Approval workflows**: For a production deployment, how would you implement an approval step before publishing? Consider using Azure DevOps or GitHub Actions to gate the publish action behind a code review and approval.
@@ -377,7 +365,6 @@ You've traced the complete identity journey of a Foundry agent:
 - Published an agent and observed the creation of a dedicated service principal
 - Compared project-level vs. published agent identities in Entra
 - Managed published versions with rollback capability
-- Tested the published agent's production endpoint
 
 ### The Big Picture
 
